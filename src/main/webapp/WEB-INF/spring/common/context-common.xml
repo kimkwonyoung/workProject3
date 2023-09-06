@@ -23,7 +23,7 @@
 	</bean>
 
 
-	<bean id="egov.antPathMater" class="org.springframework.util.AntPathMatcher" />
+	<!-- <bean id="egov.antPathMater" class="org.springframework.util.AntPathMatcher" /> -->
 
     <!-- configBean -->
     <bean id="globalProperty" class="com.kosa.work.service.GlobalProperty"  />

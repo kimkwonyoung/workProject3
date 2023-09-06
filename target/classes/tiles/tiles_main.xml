@@ -14,12 +14,21 @@
 	
 	</definition>
 	
+	<definition name="noLayout" template="/WEB-INF/jsp/common/nolayout.jsp">
+	<put-attribute name="body" value=""/>
+	
+	</definition>
+	
 	<definition name="*" extends="baseLayout">
 		<put-attribute name="body" value="/WEB-INF/jsp/{1}.jsp" />
 	</definition>
 	
 	<definition name="*/*" extends="baseLayout">
 		<put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}.jsp" />
+	</definition>
+	
+	<definition name="*/*/*" extends="noLayout">
+		<put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}.jsp" />
 	</definition>
 
 </tiles-definitions>

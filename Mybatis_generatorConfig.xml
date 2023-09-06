@@ -29,7 +29,7 @@
 
         
        <!-- 자바용 모델 생성 -->
-		<javaModelGenerator targetPackage="java.com.kosa.service.model.general" targetProject="workProject2" >
+		<javaModelGenerator targetPackage="com.kosa.work.service.model.general" targetProject="workProject3" >
 			<property name="rootClass" value="java.com.kosa.model.general.GeneralModel"/>
 			
 			<property name="enableSubPackages" value="false" />
@@ -37,7 +37,7 @@
 		</javaModelGenerator>
 		
 		<!-- 매퍼 XML 저장 위치 -->
-		<sqlMapGenerator targetPackage="java.com.kosa.mybatis.mappers" targetProject="workProject2" />	
+		<sqlMapGenerator targetPackage="com.kosa.work.mybatis.mappers" targetProject="workProject3" />	
 		
 		
 		<!-- 생성할 테이블 -->

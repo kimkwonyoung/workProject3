@@ -24,7 +24,7 @@
     
 	<!-- proxy-target-class : interface 구현 없이도 트랜잭션 적용 가능하도록 설정 -->
 	<aop:config proxy-target-class="true">
-		<aop:pointcut id="requiredTx" expression="execution(public * java.com.kosa.service.impl.*Impl.*(..))"/>
+		<aop:pointcut id="requiredTx" expression="execution(public * com.kosa.work.service.impl.*Impl.*(..))"/>
 		<aop:advisor advice-ref="txAdvice" pointcut-ref="requiredTx" />
 	</aop:config>
 	 
