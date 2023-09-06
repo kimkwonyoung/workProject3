@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+<beans:beans 
+	xmlns="http://www.springframework.org/schema/mvc"
+	xmlns:tx="http://www.springframework.org/schema/tx"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:beans="http://www.springframework.org/schema/beans"
 	xmlns:context="http://www.springframework.org/schema/context"
@@ -11,7 +13,31 @@
 	
 	<!-- Enables the Spring MVC @Controller programming model -->
 	<annotation-driven />
-
+	
+	<!-- 스프링3.1이상 설정 -->
+	<!-- <mvc:annotation-driven>
+		<mvc:message-converters>
+			<bean class="org.springframework.http.converter.StringHttpMessageConverter">
+				<property name="supportedMediaTypes">
+					<list>
+						<value>application/json;charset=utf-8</value>
+						<value>text/html;charset=utf-8</value>
+					</list>	
+				</property>
+			</bean>
+		</mvc:message-converters>
+	</mvc:annotation-driven> -->
+	
+	<!-- 트랜잭션 범위를 정확하게 지정하기 위해 exclude 명시 -->
+	<context:component-scan base-package="com.kosa.work">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service"/>
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Repository"/> 
+    </context:component-scan>
+	
+	<!-- 트랜잭션 (application-context 레벨의 트랜잭션을 인식할 수 있게 설정 필요) -->
+	<tx:annotation-driven proxy-target-class="true" />
+	
 	<!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources directory -->
 	<resources mapping="/resources/**" location="/resources/" />
 
@@ -20,6 +46,7 @@
  	<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<beans:property name="prefix" value="/WEB-INF/views/" />
 		<beans:property name="suffix" value=".jsp" />
+		<beans:property name="order" value="1" />
 	</beans:bean>
  -->	
 
@@ -37,99 +64,11 @@
 	<beans:bean id="viewResolver"
 		class="org.springframework.web.servlet.view.UrlBasedViewResolver">
 		<beans:property name="viewClass" value="org.springframework.web.servlet.view.tiles2.TilesView" />
+		<!--  <beans:property name="order" value="2" />-->
 	</beans:bean>
 
-	<context:component-scan base-package="com.kosa.work" />
+	<!-- <context:component-scan base-package="com.kosa.work" /> -->
 	
 	
 	
 </beans:beans>
-
-
-
-<!-- <?xml version="1.0" encoding="UTF-8"?>
-<beans:beans
-	xmlns="http://www.springframework.org/schema/beans" 
-	xmlns:mvc ="http://www.springframework.org/schema/mvc"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:p="http://www.springframework.org/schema/p" 
-	xmlns:util="http://www.springframework.org/schema/util"
-	xmlns:aop="http://www.springframework.org/schema/aop"
-	xmlns:beans="http://www.springframework.org/schema/beans"
-	xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:tx="http://www.springframework.org/schema/tx"
-	xsi:schemaLocation="
-		http://www.springframework.org/schema/mvc 
-		https://www.springframework.org/schema/mvc/spring-mvc.xsd
-		http://www.springframework.org/schema/beans 
-		https://www.springframework.org/schema/beans/spring-beans.xsd
-		http://www.springframework.org/schema/context 
-		https://www.springframework.org/schema/context/spring-context.xsd"
-		>
-
-	DispatcherServlet Context: defines this servlet's request-processing infrastructure
-	
-	Enables the Spring MVC @Controller programming model
-	<annotation-driven />
-	
-	트랜잭션 범위를 정확하게 지정하기 위해 exclude 명시
-	<context:component-scan base-package="com.kosa.work">
-        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
-        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service"/>
-        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Repository"/> 
-    </context:component-scan>
-	
-	spring 3.1 이상 설정
-	<mvc:annotation-driven>
-		for @ResponseBody
-		<mvc:message-converters>
-			<bean class="org.springframework.http.converter.StringHttpMessageConverter">
-				<property name="supportedMediaTypes">
-					<list>
-						<value>application/json;charset=utf-8</value>
-						<value>text/html;charset=utf-8</value>
-					</list>	
-				</property>
-			</bean>
-		</mvc:message-converters>
-	</mvc:annotation-driven>
-	
-	
-    트랜잭션 (application-context 레벨의 트랜잭션을 인식할 수 있게 설정 필요)
-    <tx:annotation-driven proxy-target-class="true" />
-
-	Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources directory
-	<resources: mapping="/resources/**" location="/resources/" />
-
-	Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory
-	<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-		<beans:property name="prefix" value="/WEB-INF/jsp/" />
-		<beans:property name="suffix" value=".jsp" />
-		<beans:property name="order" value="1" />
-	</beans:bean>
-	
-	
-	<beans:bean id="tilesConfigurer" class="org.springframework.web.servlet.view.tiles2.TilesConfigurer">
-		<beans:property name="definitions">
-			<beans:list>
-				<beans:value>classpath:tiles/*.xml</beans:value>
-			</beans:list>
-		</beans:property>
-		<beans:property 
-			name="preparerFactoryClass"
-			value="org.springframework.web.servlet.view.tiles2.SpringBeanPreparerFactory" />
-	</beans:bean>
-	
-	<beans:bean id="viewResolver"
-		class="org.springframework.web.servlet.view.UrlBasedViewResolver">
-		<beans:property name="viewClass" value="org.springframework.web.servlet.view.tiles2.TilesView" />
-		<beans:property name="order" value="2" />
-	</beans:bean>
-	
-	
-	
-	
-	
-	
-</beans:beans>
- -->

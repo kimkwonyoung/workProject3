@@ -29,7 +29,7 @@
     <bean id="globalProperty" class="com.kosa.work.service.GlobalProperty"  />
     
     <!-- define UploadFile -->
- <!--    <bean id="uploadFile" class="com.tagoplus.util.UploadFile">
+ <!--    <bean id="uploadFile" class="com.kosa.work.util.UploadFile">
         <property name="uploadPath" value="#{globals['upload.path.physical.local']}" />
         <property name="subDirectory" value="" />
         <property name="fileExtensions" value="#{globals['upload.ext']}" />
@@ -52,7 +52,7 @@
     
 	<!-- define email sender -->
 	
-<!--     <bean id="mailUtil" class="com.tagoplus.util.MailUtil">
+<!--     <bean id="mailUtil" class="com.kosa.work.util.MailUtil">
         <property name="smtp" value="#{globals['mail.host']}" />
         <property name="port" value="#{globals['mail.port']}" />
         <property name="charset" value="UTF-8" />
