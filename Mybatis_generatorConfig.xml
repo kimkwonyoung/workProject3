@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd" >
+
+<!-- 
+    MyBatis 모델, 매퍼 제너레이터
+ -->
+<generatorConfiguration>
+
+    <!-- jdbc 커넥터  -->
+	<classPathEntry location="C:\workspaceSpring\workProjcet2\src\main\webapp\WEB-INF\lib\ojdbc6.jar" />
+	<context id="context1" targetRuntime="MyBatis3">
+		<!-- 기본 주석 금지 여부 -->
+		<commentGenerator>
+			<property name="suppressAllComments" value="true"/>
+			<property name="suppressDate" value="true" />
+		</commentGenerator>
+		
+		<!-- DB 접속 정보 -->
+		<jdbcConnection driverClass="oracle.jdbc.driver.OracleDriver" 
+			connectionURL="jdbc:oracle:thin:@localhost:1521:XE" 
+			userId="kosa" 
+			password="1004" />
+		
+		<!-- DECIMAL, NUMERIC 타입 처리 -->
+		<javaTypeResolver>
+			<property name="forceBigDecimals" value="false"/>
+		</javaTypeResolver>
+        
+
+        
+       <!-- 자바용 모델 생성 -->
+		<javaModelGenerator targetPackage="java.com.kosa.service.model.general" targetProject="workProject2" >
+			<property name="rootClass" value="java.com.kosa.model.general.GeneralModel"/>
+			
+			<property name="enableSubPackages" value="false" />
+			<property name="trimStrings" value="true"/>
+		</javaModelGenerator>
+		
+		<!-- 매퍼 XML 저장 위치 -->
+		<sqlMapGenerator targetPackage="java.com.kosa.mybatis.mappers" targetProject="workProject2" />	
+		
+		
+		<!-- 생성할 테이블 -->
+		<table tableName="test" domainObjectName="testVO" 
+			enableInsert="true"
+			enableCountByExample="false" 
+			enableDeleteByExample="false"
+			enableSelectByExample="false"
+			enableUpdateByExample="false"
+			selectByExampleQueryId="false">
+		</table>
+		 
+	</context>
+	
+</generatorConfiguration>

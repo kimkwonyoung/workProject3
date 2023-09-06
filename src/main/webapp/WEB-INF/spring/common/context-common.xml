@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+                http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+                http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+                
+    <util:properties id="globals" location="/WEB-INF/config/globals.properties" />
+        
+	<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="basenames">
+			<list>
+				<value>/WEB-INF/config/globals.properties</value>
+				<value>/WEB-INF/config/message.properties</value>
+			</list>
+		</property>
+		<!-- <property name="defaultEncoding" value="UTF-8" /> -->
+		<property name="cacheSeconds">
+			<value>60</value>
+		</property>
+	</bean>
+
+
+	<bean id="egov.antPathMater" class="org.springframework.util.AntPathMatcher" />
+
+    <!-- configBean -->
+    <bean id="globalProperty" class="com.kosa.work.service.GlobalProperty"  />
+    
+    <!-- define UploadFile -->
+ <!--    <bean id="uploadFile" class="com.tagoplus.util.UploadFile">
+        <property name="uploadPath" value="#{globals['upload.path.physical.local']}" />
+        <property name="subDirectory" value="" />
+        <property name="fileExtensions" value="#{globals['upload.ext']}" />
+    </bean> -->
+    
+    <!-- MULTIPART RESOLVERS -->
+    <!-- regular spring resolver -->
+    <bean id="filterMultipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="31457280" />
+        <property name="maxInMemorySize" value="100000000" />
+        <property name="defaultEncoding" value="UTF-8" />
+        <property name="uploadTempDir" ref="uploadDirResource" />
+    </bean>
+	
+	<bean id="uploadDirResource" class="org.springframework.core.io.FileSystemResource">
+        <constructor-arg>
+            <value>#{globals['upload.path.physical.local']}/temp</value>
+        </constructor-arg>
+    </bean>
+    
+	<!-- define email sender -->
+	
+<!--     <bean id="mailUtil" class="com.tagoplus.util.MailUtil">
+        <property name="smtp" value="#{globals['mail.host']}" />
+        <property name="port" value="#{globals['mail.port']}" />
+        <property name="charset" value="UTF-8" />
+        <property name="fromAddress" value="#{globals['admin.email']}" />
+        <property name="fromName" value="#{globals['admin.name']}" />
+    </bean> -->
+	
+</beans>
