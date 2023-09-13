@@ -6,18 +6,14 @@
 <tiles-definitions>
 
 	<definition name="baseLayout" template="/WEB-INF/jsp/common/layout.jsp">
-	
 	<put-attribute name="header" value="/WEB-INF/jsp/common/header.jsp"/>
-	<!-- <put-attribute name="side" value="/WEB-INF/views/common/side.jsp"/> -->
 	<put-attribute name="body" value=""/>
-	<!-- <put-attribute name="footer" value="/WEB-INF/views/common/footer.jsp"/> -->
-	
 	</definition>
 	
-	<definition name="noLayout" template="/WEB-INF/jsp/common/nolayout.jsp">
-	<put-attribute name="body" value=""/>
+<!-- 	<definition name="noLayout" template="/WEB-INF/jsp/common/nolayout.jsp"> -->
+<!-- 	<put-attribute name="body" value=""/> -->
 	
-	</definition>
+<!-- 	</definition> -->
 	
 	<definition name="*" extends="baseLayout">
 		<put-attribute name="body" value="/WEB-INF/jsp/{1}.jsp" />
@@ -29,6 +25,7 @@
 	
 	<definition name="*/*/*" extends="noLayout">
 		<put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}.jsp" />
-	</definition>
+ 	</definition>
+ 	
 
 </tiles-definitions>

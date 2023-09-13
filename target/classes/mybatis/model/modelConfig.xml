@@ -3,8 +3,31 @@
 	"http://mybatis.org/dtd/mybatis-3-config.dtd">
 
 <configuration>
+	<settings> 
+		<setting name="cacheEnabled" value="false" />
+		<setting name="defaultExecutorType" value="REUSE" />
+		<setting name="lazyLoadingEnabled" value="false"/>
+		<setting name="mapUnderscoreToCamelCase" value="true"/> <!-- 카멜표기법 test_num => testNum -->
+		<!-- 
+		<setting name="useGeneratedKeys" value="true" />		
+		 -->
+	</settings>
 	<typeAliases>
+			<typeAlias type="com.kosa.work.service.model.BoardVO"  alias="boardVO" />
+			<typeAlias type="com.kosa.work.service.model.NoticeVO"  alias="noticeVO" />
+			<typeAlias type="com.kosa.work.service.model.CommentVO"  alias="commentVO" />
+			<typeAlias type="com.kosa.work.service.model.MemberVO"  alias="memberVO" />
+			
+			
+			
+			
 			<typeAlias type="com.kosa.work.service.model.general.GeneralModel"  alias="gm" />
 			<typeAlias type="com.kosa.work.service.model.common.SearchVO"  alias="search" />
 	</typeAliases>
+	
+	<typeHandlers>
+		<typeHandler handler="org.apache.ibatis.type.ClobTypeHandler" jdbcType="CLOB" javaType="java.lang.String"/>
+	</typeHandlers>
+	
+	
 </configuration>

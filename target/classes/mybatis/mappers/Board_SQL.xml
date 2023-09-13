@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+      PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="board">
+	<resultMap id="BaseResultMap" type="boardVO">
+	
+	<result column="board_num" jdbcType="NUMERIC" property="boardNum" />
+    <result column="mem_id" jdbcType="VARCHAR" property="memId" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="reg_date" jdbcType="TIMESTAMP" property="regDate" />
+    <result column="mod_date" jdbcType="TIMESTAMP" property="modDate" />
+    <result column="view_count" jdbcType="NUMERIC" property="viewCount" />
+	
+	</resultMap>
+	<sql id="select">
+		board_num, mem_id, title, content, reg_date, mod_date, view_count
+	</sql>
+	
+<!-- 	<sql id="whereClause"> -->
+<!-- 		<trim prefix="where" prefixOverrides="and"> -->
+<!-- 			<if test="searchWord != null and searchWord != ''"> -->
+<!-- 				<choose> -->
+<!-- 					<when test="type1 == 'title'"> -->
+<!-- 						and title like concat(concat('%', #{searchWord}), '%') -->
+<!-- 					</when> -->
+<!-- 					<when test="type1 == 'mem_id'"> -->
+<!-- 						and mem_id like concat(concat('%', #{searchWord}), '%') -->
+<!-- 					</when> -->
+<!-- 					<otherwise> -->
+<!-- 						and (title like concat(concat('%', #{searchWord}), '%') or mem_id like concat(concat('%', #{searchWord}), '%') -->
+<!-- 					</otherwise> -->
+<!-- 				</choose> -->
+<!-- 			</if> -->
+<!-- 		</trim> -->
+<!-- 	</sql> -->
+	
+	<select id="selectMainBoard" resultType="boardVO">
+		select
+		<include refid="select" /> 
+		from  board
+		<![CDATA[ where rownum <= 5 ]]>
+		order by board_num desc
+	</select>
+	
+<!-- 	<select id="totalCount" parameterType="search" resultType="int"> -->
+<!-- 		select count(*) -->
+<!-- 		from board -->
+<!-- 		<include refid="whereClause" /> -->
+<!-- 	</select> -->
+
+<!-- 	<select id="selectBoardList" parameterType="search" resultType="boardVO"> -->
+<!-- 		<include refid="paging.top" /> -->
+<!-- 		select /*+ index_desc(a PK_BOARD) */ a.* -->
+<!-- 		from board a -->
+<!-- 		<include refid="whereClause" /> -->
+<!-- 		<choose> -->
+<!-- 			<when test="orderBy != ''"> -->
+<!-- 				order by ${orderBy } -->
+<!-- 			</when> -->
+<!-- 			<otherwise> -->
+<!-- 				order by fixed_yn desc -->
+<!-- 			</otherwise> -->
+<!-- 		</choose> -->
+<!-- 		<include refid="paging.bottom" /> -->
+<!-- 	</select> -->
+
+	
+</mapper>

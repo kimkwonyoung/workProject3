@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 /**
  * globals.properties 모음 ParentController에서 로드하여 객체 접근 방법으로 코딩 가능 globals.properties를 추가하면 이 클래스에도 getter/setter를 추가해야 함.
  * 
- * @author wimy
+ * @author kky
  *
  */
 @Component
@@ -33,10 +33,6 @@ public class GlobalProperty {
 	
 	@Value("#{globals['session.name.site']}")
 	String _sSessionNameSite;
-	
-	@Value("#{globals['session.name.auth']}")
-	String _sSessionNameAuth;
-	
 	
 	
 	@Value("#{globals['cookie.popup.prefix']}")
@@ -159,23 +155,23 @@ public class GlobalProperty {
 	@Value("#{globals['common.emails']}")
 	String _sCommonEmails;
 	
-	@Value("#{globals['email.auth']}")
-	String _sEmailAuth;
-	
-	@Value("#{globals['email.join']}")
-	String _sEmailJoin;
-	
-	@Value("#{globals['email.general']}")
-	String _sEmailGeneral;
-	
-	@Value("#{globals['email.password']}")
-	String _sEmailPassword;
-	
-	@Value("#{globals['email.withdrawal']}")
-	String _sEmailWithdrawal;
-	
-	@Value("#{globals['email.question']}")
-	String _sEmailQuestion;
+//	@Value("#{globals['email.auth']}")
+//	String _sEmailAuth;
+//	
+//	@Value("#{globals['email.join']}")
+//	String _sEmailJoin;
+//	
+//	@Value("#{globals['email.general']}")
+//	String _sEmailGeneral;
+//	
+//	@Value("#{globals['email.password']}")
+//	String _sEmailPassword;
+//	
+//	@Value("#{globals['email.withdrawal']}")
+//	String _sEmailWithdrawal;
+//	
+//	@Value("#{globals['email.question']}")
+//	String _sEmailQuestion;
 	
 	// @Value("#{globals['email.qna']}")
 	// String _sEmailQna;
@@ -230,9 +226,9 @@ public class GlobalProperty {
 	 * 로그인 계정의 권한 세션 이름
 	 * @return
 	 */
-	public String getSessionNameForAuth() {
-		return _sSessionNameAuth;
-	}
+//	public String getSessionNameForAuth() {
+//		return _sSessionNameAuth;
+//	}
 	
 	/**
 	 * @return 팝업용 쿠키 이름 접두사
@@ -549,76 +545,76 @@ public class GlobalProperty {
 	 * 이메일 템플릿 URL - 인증
 	 * @return the _sEmailAuth
 	 */
-	@Deprecated
-	public String getEmailAuth() {
-		return _sEmailAuth;
-	}
-	
-	/**
-	 * 이메일 템플릿 URL - 회원가입
-	 * 
-	 * @return the _sEmailMember
-	 */
-	@Deprecated
-	public String getEmailJoin() {
-		return _sEmailJoin;
-	}
-	
-	/**
-	 * 이메일 템플릿 URL - 일반
-	 * 
-	 * @return the _sEmailGeneral
-	 */
-	@Deprecated
-	public String getEmailGeneral() {
-		return _sEmailGeneral;
-	}
-	
-	/**
-	 * 이메일 템플릿 URL - 비밀번호 변경
-	 * 
-	 * @return
-	 */
-	@Deprecated
-	public String getEmailPassword() {
-		return _sEmailPassword;
-	}
-	
-	/**
-	 * 이메일 템플릿 URL - 회원 탈퇴
-	 * 
-	 * @return
-	 */
-	@Deprecated
-	public String getEmailWithdrawal() {
-		return _sEmailWithdrawal;
-	}
-	
-	/**
-	 * 이메일 템플릿 URL - 문의 형식
-	 * 
-	 * @return
-	 */
-	@Deprecated
-	public String getEmailQuestion() {
-		return _sEmailQuestion;
-	}
-	
-	/**
-	 * 이메일 템플릿 URL - QNA
-	 * 
-	 * @return
-	 */
-	@Deprecated
-	public String getEmailQna() {
-		return _sEmailQuestion;
-	}
-	
-	/**
-	 * 다음 지도 API
-	 * @return
-	 */
-	public String getMapDaumApiKey() {
-		return this._sMapDaumAPIKey;
-	}
+//	@Deprecated
+//	public String getEmailAuth() {
+//		return _sEmailAuth;
+//	}
+//	
+//	/**
+//	 * 이메일 템플릿 URL - 회원가입
+//	 * 
+//	 * @return the _sEmailMember
+//	 */
+//	@Deprecated
+//	public String getEmailJoin() {
+//		return _sEmailJoin;
+//	}
+//	
+//	/**
+//	 * 이메일 템플릿 URL - 일반
+//	 * 
+//	 * @return the _sEmailGeneral
+//	 */
+//	@Deprecated
+//	public String getEmailGeneral() {
+//		return _sEmailGeneral;
+//	}
+//	
+//	/**
+//	 * 이메일 템플릿 URL - 비밀번호 변경
+//	 * 
+//	 * @return
+//	 */
+//	@Deprecated
+//	public String getEmailPassword() {
+//		return _sEmailPassword;
+//	}
+//	
+//	/**
+//	 * 이메일 템플릿 URL - 회원 탈퇴
+//	 * 
+//	 * @return
+//	 */
+//	@Deprecated
+//	public String getEmailWithdrawal() {
+//		return _sEmailWithdrawal;
+//	}
+//	
+//	/**
+//	 * 이메일 템플릿 URL - 문의 형식
+//	 * 
+//	 * @return
+//	 */
+//	@Deprecated
+//	public String getEmailQuestion() {
+//		return _sEmailQuestion;
+//	}
+//	
+//	/**
+//	 * 이메일 템플릿 URL - QNA
+//	 * 
+//	 * @return
+//	 */
+//	@Deprecated
+//	public String getEmailQna() {
+//		return _sEmailQuestion;
+//	}
+//	
+//	/**
+//	 * 다음 지도 API
+//	 * @return
+//	 */
+//	public String getMapDaumApiKey() {
+//		return this._sMapDaumAPIKey;
+//	}
 }

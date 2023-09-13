@@ -5,9 +5,15 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:beans="http://www.springframework.org/schema/beans"
 	xmlns:context="http://www.springframework.org/schema/context"
-	xsi:schemaLocation="http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd
 		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
-		http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+		http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd
+		
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		">
 
 	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
 	
@@ -15,7 +21,7 @@
 	<annotation-driven />
 	
 	<!-- 스프링3.1이상 설정 -->
-	<!-- <mvc:annotation-driven>
+<!-- 	<mvc:annotation-driven>
 		<mvc:message-converters>
 			<bean class="org.springframework.http.converter.StringHttpMessageConverter">
 				<property name="supportedMediaTypes">
@@ -66,7 +72,7 @@
 		<beans:property name="viewClass" value="org.springframework.web.servlet.view.tiles2.TilesView" />
 	</beans:bean>
 
-	<!-- <context:component-scan base-package="com.kosa.work" /> -->
+	<context:component-scan base-package="com.kosa.work" />
 	
 	
 	

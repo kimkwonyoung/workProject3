@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+      PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="member">
+	<sql id="select">
+		membernum, memberid, pwd, name, phone
+	</sql>
+	
+	<select id="selectMemberList" parameterType="search" resultType="memberVO">
+		select
+		<include refid="select" /> 
+		from (
+			select membernum, memberid, pwd, name, phone
+			from member
+			where membernum != 0
+		<if test="scMemNum > 0">
+		<![CDATA[	
+			and membernum < #{scMemNum}    
+		]]>
+		</if>
+			order by membernum desc ) 
+		<![CDATA[
+			where rownum <= 10
+		]]>
+	</select>
+	
+	<select id="selectMemberOneRow" resultType="memberVO">
+		select 
+		<include refid="select" />
+		from (
+    			select membernum, memberid, pwd, name, phone
+    			from member 
+    			order by membernum desc 
+			) where rownum = 1
+	</select>
+	
+	<insert id="callMemberInsert" parameterType="memberVO">
+        {call member_insert(
+            #{memberid, jdbcType=VARCHAR, mode=IN},
+            #{name, jdbcType=VARCHAR, mode=IN},
+            #{pwd, jdbcType=VARCHAR, mode=IN},
+            #{phone, jdbcType=VARCHAR, mode=IN}
+        )}
+    </insert>
+	
+	
+</mapper>

@@ -5,51 +5,18 @@
 
 <!DOCTYPE html>
 <html>
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+<script src="<c:url value='/js/jsrender.js'/>"></script>
+<script src="<c:url value='/js/jsviews.js'/>"></script>
+<script src="<c:url value='/js/jquery.locator.js'/>"></script>
+<script src="<c:url value='/js/jquery.oLoader.min.js'/>"></script>
+<script src="<c:url value='/js/jsUtil.js'/>"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="<c:url value='/css/style.css'/>">
+
 <head>
 <meta charset="UTF-8">
-<style>
-	#container{
-		width:100%;
-		margin: 0px auto;
-		text-align: center;
-		border:none; 
-	}
-	
-	#header{
-		padding: 5px;
-		margin-bottom: 5px;
-		border: none;
-		background-color: lightgreen;
-	}
-	
-	#sidebar-left {
-		width:15%;
-		height:700px;
-		padding: 5px;
-		margin-right: 5px;
-		margin-bottom: 5px;
-		float:left;
-		background-color: yellow;
-		border:none;
-		font-size: 10px;
-	}
-	
-	#content{
-		width:75%;
-		padding: 5px;
-		margin-right: 5px;
-		float: left;
-		border: none;
-	}
-	
-	#footer {
-		clear:both;
-		padding: 5px;
-		border: none;
-		background-color: lightblue;
-	}
-	
-</style>
 
 </head>
 <body>
@@ -57,15 +24,9 @@
 		<div id="header">
 			<tiles:insertAttribute name="header"/>	
 		</div>
-		<div id="sidebar-left">
-			<tiles:insertAttribute name="side"/>
-		</div>
 		<div id="content">
 			<tiles:insertAttribute name="body"/>
 		</div>		
-		<div id="footer">
-			<tiles:insertAttribute name="footer"/>
-		</div>
 	</div>
 </body>
 </html>
