@@ -23,7 +23,7 @@
   <div class="list-all" id="container">
     <div class="board-header">
     
-    <c:if test="${empty loginMember.memberid eq 'admin' }">
+    <c:if test="${loginMember.memberid eq 'admin' }">
       <div class="link-header">
           <a class="write-button" id="del">글삭제</a>
       </div>

@@ -64,18 +64,18 @@
 		select /*+ index_desc(a PK_NOTICE) */ a.*
 		from notice a
 		<include refid="whereClause" />
-		<choose>
-			<when test="orderBy != ''">
-				order by ${orderBy }
-			</when>
-			<otherwise>
-				order by fixed_yn desc
-			</otherwise>
-		</choose>
+<!-- 		<choose> -->
+<!-- 			<when test="orderBy != ''"> -->
+<!-- 				order by ${orderBy } -->
+<!-- 			</when> -->
+<!-- 			<otherwise> -->
+				
+<!-- 			</otherwise> -->
+<!-- 		</choose> -->
 		<include refid="paging.bottom" />
 	</select>
 	
-	<select id="selectOneRow" parameterType="noticeVO">
+	<select id="selectOneRow" parameterType="noticeVO" resultType="noticeVO">
 		select
 		<include refid="select" />
 		from notice
@@ -83,12 +83,63 @@
 	
 	</select>
 	
-	<update id="noticeUpdate" parameterType="noticeVO">
+	<select id="selectNewOneRow" resultType="noticeVO">
+		select
+			<include refid="select" />
+		from (
+				select * 
+				from notice
+				order by notice_num desc
+			)
+		where rownum = 1
+	</select>
+	
+	
+	<select id="selectAddNumList" parameterType="search" resultType="noticeVO">
+		select
+			<include refid="select" />
+		from (
+			select * from notice
+			<if test="scNoticeNum > 0">
+				<![CDATA[
+					where notice_num < #{scNoticeNum}
+				]]>
+			</if>
+				order by notice_num desc
+			)
+	<![CDATA[
+		where rownum <= #{scNrow}
+	]]> 
+	</select>
+	
+	
+
+
+	
+	<update id="updateNotice" parameterType="noticeVO">
 		update notice set 
 		title = #{title}, content = #{content}, mod_date = SYSTIMESTAMP, 
 		fixed_yn = #{fixedYn} 
 		where notice_num = #{noticeNum}
 	</update>
+	
+	<insert id="insertNotice" parameterType="noticeVO">
+		insert into notice (
+				notice_num, mem_id, title, content, fixed_yn) 
+		values (
+				notice_num.nextval, #{memId}, #{title}, #{content}, #{fixedYn}
+			)
+	</insert>
+	
+	<delete id="deleteNotice" >
+		delete from notice 
+		where notice_num in
+		<foreach item="noticenum" collection="numlist"  open="("  separator="," close=")"> 
+			#{noticenum}		
+		</foreach> 
+	</delete>
+	
+	
 
 	
 </mapper>

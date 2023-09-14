@@ -1,7 +1,9 @@
 package com.kosa.work.controller.member;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletException;
@@ -10,9 +12,16 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.kosa.work.controller.AdminController;
 import com.kosa.work.controller.PrtController;
 import com.kosa.work.service.dao.GeneralDAOImpl;
 import com.kosa.work.service.impl.MemberServiceImpl;
@@ -25,11 +34,36 @@ import com.kosa.work.service.model.common.SearchVO;
  *
  */
 @Controller
+@RequestMapping("/member")
 public class MemberController extends PrtController {
-/*	
+	private static final Logger logger = LoggerFactory.getLogger(MemberController.class);
 	@Autowired
 	private MemberServiceImpl _memberService;
 	
+	//회원 로그인
+	@ResponseBody
+	@RequestMapping(value = "/login.do", method = RequestMethod.POST)
+	public Map<String, Object> memberLogin(@RequestBody MemberVO member) throws Exception {
+		Map<String, Object> map = _memberService.login(member);
+		
+		if ((boolean) map.get("status")) {
+			getSession().setAttribute("loginMember", map.get("member"));
+		}
+		
+		return map;
+	}
+	
+	//회원 로그아웃
+	@ResponseBody
+	@RequestMapping(value = "/logout.do", method = RequestMethod.POST)
+	public Map<String, Object> memberLogout(@RequestBody MemberVO member) throws ServletException, IOException {
+		getSession().invalidate();
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("status", true);
+		return map;
+	}
+	
+	/*	
 	//회원 가입 수행
 	public String memberInsert(MemberVO member, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		JSONObject jsonResult = _memberService.insert(member);
@@ -48,24 +82,9 @@ public class MemberController extends PrtController {
 		return jsonResult.toString();
 	}
 	
-	//회원 로그인
-	public String memberLogin(MemberVO member, HttpServletRequest request, HttpServletResponse response) throws Exception {
-		JSONObject jsonResult = _memberService.login(member);
-		HttpSession session = request.getSession();
-		if ((boolean) jsonResult.get("status")) {
-			session.setAttribute("loginMember", (MemberVO) jsonResult.get("member"));
-		}
-		return jsonResult.toString();
-	}
+
 	
-	//회원 로그아웃
-	public String memberLogout(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		request.getSession().invalidate();
-		JSONObject jsonResult = new JSONObject();
-		jsonResult.put("message", CommonProperty.getMessageLogout());
-		
-		return jsonResult.toString();
-	}
+	
 	
 	//회원 상세 정보
 	public String memberInfo(HttpServletRequest request, HttpServletResponse response) throws Exception {

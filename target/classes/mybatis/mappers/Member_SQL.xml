@@ -36,6 +36,13 @@
 			) where rownum = 1
 	</select>
 	
+	<select id="selectMemberId" parameterType="String" resultType="memberVO">
+		select
+		<include refid="select" />
+		from member 
+		where memberid = #{memberid}
+	</select>
+	
 	<insert id="callMemberInsert" parameterType="memberVO">
         {call member_insert(
             #{memberid, jdbcType=VARCHAR, mode=IN},

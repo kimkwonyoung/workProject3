@@ -132,17 +132,17 @@ public class GlobalProperty {
 	@Value("#{globals['mail.port']}")
 	String _sMailPort;
 	
-	@Value("#{globals['sns.fb.api']}")
-	String _sSNSFbAPIKey;
-	
-	@Value("#{globals['sns.kakao.api']}")
-	String _sSNSKakaoAPIKey;
-	
-	@Value("#{globals['sns.naver.api']}")
-	String _sSNSNaverAPIKey;
-
-	@Value("#{globals['map.daum.api']}")
-	String _sMapDaumAPIKey;
+//	@Value("#{globals['sns.fb.api']}")
+//	String _sSNSFbAPIKey;
+//	
+//	@Value("#{globals['sns.kakao.api']}")
+//	String _sSNSKakaoAPIKey;
+//	
+//	@Value("#{globals['sns.naver.api']}")
+//	String _sSNSNaverAPIKey;
+//
+//	@Value("#{globals['map.daum.api']}")
+//	String _sMapDaumAPIKey;
 	
 	
 	@Value("#{globals['common.date.type']}")
@@ -472,27 +472,27 @@ public class GlobalProperty {
 	 * 
 	 * @return
 	 */
-	public String getSNSFbAPIKey() {
-		return _sSNSFbAPIKey;
-	}
+//	public String getSNSFbAPIKey() {
+//		return _sSNSFbAPIKey;
+//	}
 	
 	/**
 	 * 카카오 API 키
 	 * 
 	 * @return
 	 */
-	public String getSNSKakaoAPIKey() {
-		return _sSNSKakaoAPIKey;
-	}
+//	public String getSNSKakaoAPIKey() {
+//		return _sSNSKakaoAPIKey;
+//	}
 	
 	/**
 	 * 네이버 API 키
 	 * 
 	 * @return
 	 */
-	public String getSNSNaverAPIKey() {
-		return _sSNSNaverAPIKey;
-	}
+//	public String getSNSNaverAPIKey() {
+//		return _sSNSNaverAPIKey;
+//	}
 	
 	/**
 	 * 날짜 표시 유형 : SearchVO 참조

@@ -69,7 +69,7 @@ public class filterurl implements Filter {
         	System.out.println("로그인 한 상태 확인");
 //        	MemberVO mem = (MemberVO) session.getAttribute("loginMember");
 //        	if (!mem.getMemberid().equals("admin")) {
-//        		if (action.equals("/admin/memberList.do")) {
+//        		if (action.equals("/admin/*.do")) {
 //	                 httpResponse.sendRedirect(contextPath + "/main.do");
 //	                 return;
 //	             } else if (action.equals("")) {

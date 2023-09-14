@@ -1,11 +1,6 @@
 package com.kosa.work.service.model;
 
 
-import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.json.JSONObject;
 
 import com.kosa.work.service.model.general.GeneralModel;
 
@@ -29,6 +24,8 @@ public class NoticeVO implements GeneralModel {
 	private int viewCount;
 	private String fixedYn;
 	
+	
+	private int nrow; // rownum 컬럼 사용(파라미터)
 	
 	
 	

@@ -5,7 +5,6 @@
 <html lang="ko">
 <head>
 <link rel="stylesheet" href="<c:url value='/css/board.css'/>">
-
   <title>게시판 목록</title>
 </head>
 <body>
@@ -14,14 +13,14 @@
 	
   <div class="list-all" id="container">
     <div class="board-header">
-      <div class="link-header">
+      <div class="link-header" style="display:none">
           <a class="write-button" id="del">글삭제</a>
 	      <a class="write-button" id="wr" href="#">글쓰기</a> 
       </div>
     </div>
-
-    <table>
     
+
+    <table id="noticeTable">
     <caption class="board-title">공지사항 게시판</caption>
       <thead>
         <tr>
@@ -33,22 +32,25 @@
           <th>조회수</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody id="noticelist">
       <c:forEach var="notice" items="${result.noticeList }">
        <tr class="highlight">
       	  <td class="checkbox-cell"><input type="checkbox" name="chkBoardNum" class="chkbox" value="${notice.noticeNum }"></td>
           <td>${notice.noticeNum }</td>
-          <td><a href="<c:url value='boardInfo.do?board_num=${notice.noticeNum }'/>">${notice.title}</a></td>
+          <td><a href="#" onclick="info(${notice.noticeNum})">${notice.title}</a></td>
           <td>${notice.memId }</td>
           <td>${notice.modDate }</td>
           <td>${notice.viewCount }</td>
        </tr>
       </c:forEach>
+      </tbody>
+      <tbody id="noticebottom">
+      
        <c:forEach var="board" items="${result.list}">
         <tr>
-          <td class="checkbox-cell"><input type="checkbox" name="chkBoardNum" class="chkbox" value="${notice.noticeNum }"></td>
+          <td class="checkbox-cell"><input type="checkbox" name="chkBoardNum" class="chkbox" value="${board.noticeNum }"></td>
           <td>${board.noticeNum }</td>
-          <td><a href="<c:url value='boardInfo.do?board_num=${board.noticeNum }'/>">${board.title}</a></td>
+          <td><a href="#" onclick="info(${board.noticeNum})">${board.title}</a></td>
           <td>${board.memId }</td>
           <td>${board.modDate }</td>
           <td>${board.viewCount }</td>
@@ -122,19 +124,39 @@
     </div>
 </div>
 
+<script id="noticeTemplate" type="text/x-jsrender">
+	<tr>
+    	<td class="checkbox-cell"><input type="checkbox" name="chkBoardNum" class="chkbox" value="{{:noticeNum}}"></td>
+    	<td>{{:noticeNum}}</td>
+    	<td><a href="#" onclick="info({{:noticeNum}})">{{:title}}</a></td>
+    	<td>{{:memId}}</td>
+    	<td>{{:modDate }}</td>
+    	<td>{{:viewCount }}</td>
+	</tr>
+</script>
 	
 <script>
 $(document).ready(function() {
+	const currentUrl = window.location.href;
+	
+	if (currentUrl.includes("admin")) {
+		$(".link-header").css("display", "block");
+	}
+	
     $("#dialogInfo").dialog({
         autoOpen: false,
         modal: true,
         width: 1000,
         height: 800,
         buttons: {
-        	"글 수정": function() {
-        		const noticenum = $("#infoNoticenum").val();
-    			openUpdate(noticenum);
-    		},
+       		"글 수정": function() {
+       			if (currentUrl.includes("admin")) {
+           			const noticenum = $("#infoNoticenum").val();
+       				openUpdate(noticenum);
+       			} else {
+       				alert("관리자만 수정 가능");
+       			}
+       		},
             "Close": function() {
                 $(this).dialog("close");
             }
@@ -175,11 +197,12 @@ $(document).ready(function() {
 });
 
 function addUpdate(noticenum) {
+	const fixedYn = $("#fixed-yn").is(":checked") ? "Y" : "N";
 	const param = {
 	        noticeNum: noticenum,
 	        title: $("#updateTitle").val(),
 	        content: $("#updateContent").val(),
-	        fixedYn: $("#fixed-yn").val()
+	        fixedYn: fixedYn
 	      };
     
 	$.ajax({
@@ -204,7 +227,7 @@ function openUpdate(noticenum) {
 	      };
     
 	$.ajax({
-		url: "<c:url value='/admin/noticeUpdateInfo.do'/>",
+		url: "<c:url value='/admin/noticeInfo.do'/>",
 		type: "POST",
 		contentType: "application/json; charset=UTF-8",
 		data: JSON.stringify(param),
@@ -224,40 +247,30 @@ function openUpdate(noticenum) {
 }
 
 function addWrite() {
+	const fixedYn = $("#fixed-yn").is(":checked") ? "Y" : "N";
 	const param = {
 			title: $("#writeTitle").val(),
 			content: $("#writeContent").val(),
-			mem_id: "admin"
+			memId: "admin",
+			fixedYn: fixedYn
+			
 	      };
     
 	$.ajax({
-		url: "<c:url value='/board/ajaxWrite2.do'/>",
+		url: "<c:url value='/admin/noticeWrite.do'/>",
 		type: "POST",
 		contentType: "application/json; charset=UTF-8",
 		data: JSON.stringify(param),
 		dataType: "json",
 		success: (json) => {
-		const list = json.boardAjaxOne;	
-		const boardItem = $("#boardItem");
-		const boardListHTML = $("#board_list");
+		  const notice = json.noticeRow;
+		  const noticeTemplate = $("#noticeTemplate").html();
+		  const tmpl = $.templates(noticeTemplate);
+		  const renderedNotice = tmpl.render(notice);
 		  
-		  for (let i=0; i<list.length; i++) {
-			  const board = list[i];
-			  const newBoardItem = boardItem.clone(true);
-			  const title = newBoardItem.find("#title");
-			  
-		   	  title.text(board.title);
-		   	  title.on("click", () => info(board.board_num));
-		      
-		   	  newBoardItem.find("#boardN").text(board.board_num);
-		      newBoardItem.find("#memId").text(board.mem_id);
-		      newBoardItem.find("#mod_date").text(board.mod_date);
-		      newBoardItem.find("#view_count").text(board.view_count);
-		
-		   	  newBoardItem.show();
-			  boardListHTML.prepend(newBoardItem);
-		  }
-			
+		  const noticeListHTML = $("#noticebottom");
+		  $(noticeListHTML).prepend(renderedNotice);
+
 		}
 	});
 	
@@ -269,23 +282,20 @@ function info(noticenum) {
 	      };
     
 	$.ajax({
-		url: "<c:url value='/board/ajaxInfo2.do'/>",
+		url: "<c:url value='/admin/noticeInfo.do'/>",
 		type: "POST",
 		contentType: "application/json; charset=UTF-8",
 		data: JSON.stringify(param),
 		dataType: "json",
 		success: (json) => {
-       	  const infoList = json.boardInfo;
-       	  for (let i=0; i<infoList.length; i++) {
-       		  const info = infoList[i];
-       		  
-       		  $("#infoNoticenum").val(info.noticeNum);
-       		  $("#author").text(info.mem_id);
-       	      $("#date").text(info.mod_date);
-       	      $("#views").text(info.view_count);
-       		  $("#post-content").html(info.content);
-       		  $("#dialogInfo").dialog("option", "title", info.title);
-       	  }
+	       	const info = json.noticeInfo;
+	       		  
+	    	$("#infoNoticenum").val(info.noticeNum);
+	     	$("#author").text(info.memId);
+	     	$("#date").text(info.modDate);
+	     	$("#views").text(info.viewCount);
+	     	$("#post-content").html(info.content);
+	     	$("#dialogInfo").dialog("option", "title", info.title);
 			
 		}
 	});
@@ -317,24 +327,55 @@ $("#checkAll").on("click", () => {
 	$(".chkbox").prop("checked", $("#checkAll").prop("checked"));
 });
 
-// var board_code =
-
-//체크 박스 선택한것 삭제
 $("#del").on("click", (event) => {
 	if (confirm('정말로 삭제 하시겠습니까?')) {
-		var deleteStr = "";
-		$("input[name='chkBoardNum']").each((i, chk) => {
-		    if ($(chk).prop("checked")) {
-		        deleteStr += $(chk).val() + ',';
+// 		var count = 0;
+// 		var deleteStr = "";
+		const checkedNoticeNums = [];
+		var isChk = true;
+		
+		$("input[name='chkBoardNum']").each((i, chkbox) => {
+		    if ($(chkbox).prop("checked")) {
+// 		        count++;
+// 		        var boardNumCell = row.find('td:nth-child(2)');
+// 		        var boardNum = boardNumCell.text().trim();
+// 		        deleteStr += boardNum + ',';
+		        const noticeNum = $(chkbox).val(); 
+		        checkedNoticeNums.push(noticeNum); // 배열에 추가
+		        var row = $(chkbox).closest('tr');
+		        row.css("display", "none");
+		        isChk = false;
 		    }
 		});
-		if (deleteStr === '') {
+		if (isChk) {
 			alert('삭제할 글을 선택 하세요.');
 		} else {
-			deleteStr = deleteStr.substr(0, deleteStr.length - 1);
-			window.location.href = 'boardDeleteChkbox.do?board_code=' + board_code + '&bnumStr=' + deleteStr;
+// 			deleteStr = deleteStr.substr(0, deleteStr.length - 1);
+// 			search.paging.pageIndex : 현재 페이지 (cpage)
+			const param = {
+// 					 	count: count,
+// 				        deleteStr: deleteStr,
+						scNoticeChkNum: checkedNoticeNums,
+						scNoticeNum: $("#noticeTable tbody:last tr:last-child td:nth-child(2)").text(),
+				      };
+			$.ajax({
+				url: "<c:url value='/admin/noticeDelete.do'/>",
+				type: "POST",
+				contentType: "application/json; charset=UTF-8",
+				data: JSON.stringify(param),
+				dataType: "json",
+				success: (json) => {
+					const notice = json.noticeList;
+					const noticeTemplate = $("#noticeTemplate").html();
+					const tmpl = $.templates(noticeTemplate);
+					const noticeListHTML = $("#noticebottom");
+					  
+					const renderedNotice = tmpl.render(notice);
+					$(noticeListHTML).append(renderedNotice);
+					
+				}
+			});		
 		}
-		
 	} else {
         event.preventDefault();
         return false;

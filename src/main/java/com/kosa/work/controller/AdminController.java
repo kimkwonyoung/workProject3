@@ -1,7 +1,4 @@
 package com.kosa.work.controller;
-
-
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -45,7 +43,10 @@ public class AdminController extends PrtController {
 	
 	//회원 목록
 	@RequestMapping("/memberList.do")
-	public String memberList(MemberSearchVO search, Model model) throws Exception {
+	public String memberList(MemberSearchVO search, BindingResult result, Model model) throws Exception {
+		super.setPageSubTitle("관리자 회원 목록", model);
+		if (result.hasErrors())
+			return super.setBindingResult(result, model);
     
 		model.addAttribute("memberlist", _memberService.memberList(search));
 		
@@ -76,7 +77,7 @@ public class AdminController extends PrtController {
 			search.setRecordCount(search.getScRecodeCount());
 		model.addAttribute("result", _boardService.noticeList(search));
 		model.addAttribute("search", search);
-		return "board/notice_list";
+		return "admin/notice_list";
 	}
 	
 	//공지사항 수정 (수정된 데이터 처리 로직 JSP 중단 상태)
@@ -91,13 +92,50 @@ public class AdminController extends PrtController {
 		return map;
 	}
 	
+	//공지사항 수정탭 정보 띄우기
+//	@ResponseBody
+//	@RequestMapping(value = "/noticeUpdateInfo.do", method = RequestMethod.POST)
+//	public Map<String, NoticeVO> noticeUpdateInfo(@RequestBody NoticeVO notice) throws Exception {
+//		Map<String, NoticeVO> map = new HashMap<String, NoticeVO>();
+//		
+//		map.put("noticeInfo", _boardService.noticeOne(notice));
+//		
+//		return map;
+//	}
+	
+	//공지사항 글 쓰기
 	@ResponseBody
-	@RequestMapping(value = "/noticeUpdateInfo.do", method = RequestMethod.POST)
-	public Map<String, NoticeVO> noticeUpdateInfo(@RequestBody NoticeVO notice) throws Exception {
+	@RequestMapping(value = "/noticeWrite.do", method = RequestMethod.POST)
+	public Map<String, NoticeVO> noticeWrite(@RequestBody NoticeVO notice) throws Exception {
+		Map<String, NoticeVO> map = new HashMap<String, NoticeVO>();
+		_boardService.insert(notice);
+		
+		logger.debug(">>>>>>>>>>" + notice);
+		
+		map.put("noticeRow", _boardService.noticeNewOne(notice));
+		
+		return map;
+	}
+	
+	//공지사항 글 상세보기
+	@ResponseBody
+	@RequestMapping(value = "/noticeInfo.do", method = RequestMethod.POST)
+	public Map<String, NoticeVO> noticeInfo(@RequestBody NoticeVO notice) throws Exception {
 		Map<String, NoticeVO> map = new HashMap<String, NoticeVO>();
 		
 		map.put("noticeInfo", _boardService.noticeOne(notice));
 		
 		return map;
+	}
+	
+	//공지시항 글 체크 된것 삭제
+	@ResponseBody
+	@RequestMapping(value = "/noticeDelete.do", method = RequestMethod.POST)
+	public Map<String, List<NoticeVO>> noticeDeleteChk(@RequestBody BoardSearchVO search) throws Exception {
+		Map<String, List<NoticeVO>> map = new HashMap<String, List<NoticeVO>>();
+		_boardService.deleteChkbox(search);
+		map.put("noticeList", _boardService.noticeAddList(search));
+		return map;
+		
 	}
 }

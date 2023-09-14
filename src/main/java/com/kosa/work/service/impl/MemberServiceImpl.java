@@ -6,8 +6,11 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.kosa.work.controller.AdminController;
 import com.kosa.work.service.model.MemberVO;
 import com.kosa.work.service.model.common.SearchVO;
 import com.kosa.work.service.model.search.MemberSearchVO;
@@ -18,7 +21,7 @@ import com.kosa.work.service.model.search.MemberSearchVO;
  */
 @Service("memberService")
 public class MemberServiceImpl extends BaseServiceImpl {
-	
+	private static final Logger logger = LoggerFactory.getLogger(MemberServiceImpl.class);
 	//회원 전체 목록
 	public List<MemberVO> memberList(MemberSearchVO search) {
 		return (List<MemberVO>) getDAO().selectList("member.selectMemberList", search);
@@ -33,26 +36,30 @@ public class MemberServiceImpl extends BaseServiceImpl {
 		return map;
 	}
 	
+	//로그인
+	public Map<String, Object> login(MemberVO mem) throws Exception {
+		Map<String, Object> map = new HashMap<String, Object>();
+		MemberVO loginMember = (MemberVO) getDAO().selectOne("member.selectMemberId", mem.getMemberid());
+		if (loginMember != null) {
+			if (loginMember.isEqualPwd(mem)) {
+				map.put("status", true);
+				map.put("member", loginMember);
+			} else {
+				map.put("status", false);
+			}
+		} else {
+			map.put("status", false);
+		}
+		return map;
+	}
+	
 	/*	
 	//아이디를 Key로 회원 조회
 	public MemberVO selectByMember(SearchVO search) {
 		return _dao.selectBySearch(QueryProperty.getQuery("member.selectMemid"), search);
 	}
 	
-	//로그인
-	public JSONObject login(MemberVO mem) throws Exception {
-		JSONObject jsonObject = new JSONObject();
-		MemberVO loginMember = _dao.checkIdPwd(QueryProperty.getQuery("member.selectMemid"), mem);
-		if (loginMember != null) {
-			jsonObject.put("member", loginMember);
-			jsonObject.put("status", true);
-			jsonObject.put("message", CommonProperty.getMessageLoginSuccess());
-		} else {
-			jsonObject.put("status", false);
-			jsonObject.put("message", CommonProperty.getMessageMemMiss());
-		}
-		return jsonObject;
-	}
+	
 	
 	//아이디 비밀번호 찾기
 	public String selectBySearch(MemberVO mem, SearchVO search) {

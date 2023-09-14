@@ -1,5 +1,4 @@
 package com.kosa.work.service.impl;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -11,8 +10,11 @@ import javax.annotation.Resource;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.kosa.work.controller.AdminController;
 import com.kosa.work.service.dao.GeneralDAOImpl;
 import com.kosa.work.service.model.BoardVO;
 import com.kosa.work.service.model.NoticeVO;
@@ -21,8 +23,6 @@ import com.kosa.work.service.model.search.BoardSearchVO;
 import com.kosa.work.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
-
-
 /** 게시판 비즈니스 로직
  * @author kky
  *
@@ -30,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service("boardService")
 @Slf4j
 public class BoardServiceImpl extends BaseServiceImpl {
-	
+	private static final Logger logger = LoggerFactory.getLogger(BoardServiceImpl.class);
 	@Resource
 	private GeneralDAOImpl _gDao;
 	
@@ -57,6 +57,38 @@ public class BoardServiceImpl extends BaseServiceImpl {
 	public NoticeVO noticeOne(NoticeVO notice) {
 		return (NoticeVO) getDAO().selectOne("notice.selectOneRow", notice);
 	}
+	
+	//공지사항 게시판 새로 추가된 글 가져오기
+	public NoticeVO noticeNewOne(NoticeVO notice) throws JSONException, Exception {
+		return (NoticeVO) getDAO().selectOne("notice.selectNewOneRow", notice);
+	}
+	
+	//공지사항 게시판 글 쓰기
+	public void insert(NoticeVO notice) {
+		getDAO().insert("notice.insertNotice", notice);
+	}
+	
+	//공지사항 게시판 글 수정
+	public void update(NoticeVO notice) {
+		if (StringUtil.isEmpty(notice.getFixedYn())) notice.setFixedYn("N");
+		getDAO().update("notice.updateNotice", notice);
+	}
+	
+	//공지사항 게시판 글 체크한 것 삭제
+	public void deleteChkbox(BoardSearchVO search) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("numlist", search.getScNoticeChkNum());
+		getDAO().delete("notice.deleteNotice", params);
+		
+	}
+	
+	//공지사항 게시판 특정 글 로우(rownum) 갯수만큼 가져오기
+	public List<NoticeVO> noticeAddList(BoardSearchVO search) {
+		search.setScNrow(search.getScNoticeChkNum().length);
+		
+		return (List<NoticeVO>) getDAO().selectList("notice.selectAddNumList", search);
+	}
+	
 	
 	/*
 	//아이디를 Key로 게시판 글 가져오기
@@ -128,11 +160,7 @@ public class BoardServiceImpl extends BaseServiceImpl {
 		}
 	}
 	*/
-	//게시판 글 수정
-	public void update(NoticeVO notice) {
-		if (StringUtil.isEmpty(notice.getFixedYn())) notice.setFixedYn("N");
-		getDAO().update("notice.noticeUpdate", notice);
-	}
+	
 /*	
 	//게시판 댓글 수정
 	public JSONObject update(CommentVO comment) {
@@ -224,10 +252,7 @@ public class BoardServiceImpl extends BaseServiceImpl {
 		return jsonResult;
 	}
 	
-	//게시판 글 체크한것 삭제
-	public void deleteChkbox(SearchVO search) {
-		_boardDao.delete(QueryProperty.getQuery("board.deleteChk"), search.getsBNumStr());
-	}
+	
 	
 	//게시판 댓글 삭제
 	public void deleteComment(int comment_num) {
@@ -254,24 +279,9 @@ public class BoardServiceImpl extends BaseServiceImpl {
 		return jsonResult;
 	}
 	
-	public JSONObject selectByAjaxOneRow(BoardVO board) throws JSONException, Exception {
-		JSONObject jsonResult = new JSONObject();
-		board.setNrow(1);
-		jsonResult.put("boardAjaxOne", _boardDao.selectByAddList(board));
-		
-		return jsonResult;
-	}
 	
-	public void insert2(BoardVO board) {
-		if (StringUtil.isEmpty(board.getFixed_yn())) board.setFixed_yn("N");
-		board.setBoard_code(10);
-		int row = _boardDao.insert(QueryProperty.getQuery("board.insert"), board);
-		if (row > 0) {
-			System.out.println("반영된 글 갯수 : " + row);
-		} else {
-			System.out.println("반영 X");
-		}
-	}
+	
+	
 	
 
 	

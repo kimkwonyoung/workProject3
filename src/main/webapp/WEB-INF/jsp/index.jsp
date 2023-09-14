@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="s"%>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -189,29 +190,36 @@
 	    };
 
 	    $.ajax({
-	        url: "/workProject/member/memberLogin.do",
+	        url: "<c:url value='/member/login.do'/>",
 	        type: "POST",
 	        contentType: "application/json; charset=UTF-8",
 	        data: JSON.stringify(param),
 	        dataType: "json",
 	        success: (json) => {
-	            alert(json.message);
 	            if (json.status) {
-	                location.href = "<c:url value='mainIndex.do'/>";
+	            	alert("<s:message code='login.success' />")
+	            	location.href = "<c:url value='main.do'/>";
+	            } else {
+	            	alert("<s:message code='login.wrong' />")
 	            }
 	        }
 	    });
 	}
 	//로그아웃
 	function logout() {
+		const param = {
+		    };
 		$.ajax({
-			url: "/workProject/member/memberLogout.do",
-			type: "GET",
+			url: "<c:url value='/member/logout.do'/>",
+			type: "POST",
 			contentType: "application/json; charset=UTF-8",
+			data: JSON.stringify(param),
 			dataType: "json",
 			success: (json) => {
-				alert(json.message);
-		        location.href = "<c:url value='mainIndex.do'/>";
+				if (json.status) {
+					alert("<s:message code='login.logout' />");
+		        	location.href = "<c:url value='main.do'/>";
+				}
 			}
 		});
 	}

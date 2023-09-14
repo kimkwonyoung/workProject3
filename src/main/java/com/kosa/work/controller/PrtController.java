@@ -1,6 +1,4 @@
 package com.kosa.work.controller;
-
-
 import javax.annotation.Resource;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -17,8 +15,6 @@ import org.springframework.validation.ObjectError;
 
 import com.kosa.work.service.GlobalProperty;
 import com.kosa.work.service.model.MemberVO;
-
-
 /**
  * 기본 super controller : 컨트롤러 상속용 부모 컨트롤러
  * 
