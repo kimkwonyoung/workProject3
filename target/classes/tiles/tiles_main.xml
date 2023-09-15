@@ -10,10 +10,10 @@
 	<put-attribute name="body" value=""/>
 	</definition>
 	
-<!-- 	<definition name="noLayout" template="/WEB-INF/jsp/common/nolayout.jsp"> -->
-<!-- 	<put-attribute name="body" value=""/> -->
+	<definition name="noLayout" template="/WEB-INF/jsp/common/nolayout.jsp">
+	<put-attribute name="body" value=""/>
 	
-<!-- 	</definition> -->
+	</definition>
 	
 	<definition name="*" extends="baseLayout">
 		<put-attribute name="body" value="/WEB-INF/jsp/{1}.jsp" />

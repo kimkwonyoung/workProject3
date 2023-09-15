@@ -89,6 +89,16 @@ public class BoardServiceImpl extends BaseServiceImpl {
 		return (List<NoticeVO>) getDAO().selectList("notice.selectAddNumList", search);
 	}
 	
+	//일반 게시판 전체 목록(jqgrid)
+	public Map<String, Object> boardList3(BoardSearchVO search) throws Exception {
+		Map<String, Object> map = new HashMap<>();
+		
+		map.put("list",  (List<BoardVO>) getDAO().selectBySearch("board.selectBoardList", search, "totalCount"));
+		map.put("noticeList",  (List<NoticeVO>) getDAO().selectList("notice.selectMainNotice", search));
+		
+		return map;
+	}
+	
 	
 	/*
 	//아이디를 Key로 게시판 글 가져오기

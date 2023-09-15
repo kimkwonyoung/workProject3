@@ -36,7 +36,7 @@ var back = document.querySelector(".back-upwt");
  		window.location.href = href;
  	}); */
  	$(".back-upwt").on("click", () => {
- 		window.location.href = "/workProject/member/memberInfo";
+ 		window.location.href = "<c:url value='/member/memberInfo.do'/>";
  	});
 
  	$("#withForm").on("submit", (event) => {
@@ -51,15 +51,15 @@ var back = document.querySelector(".back-upwt");
  				};
  				
  				$.ajax({
- 					url: "memberWithdraw.do",
+ 					url: "<c:url value='/member/memberWithdraw.do'/>",
  					type: "POST",
  					contentType: "application/json; charset=UTF-8",
  					data: JSON.stringify(param),
  					dataType: "json",
  					success: () => {
- 						alert(json.message);
      			        if (json.status) {
-     			      	  location.href = "<c:url value='mainIndex.do'/>"; 
+     			          alert("회원 탈퇴 완료");
+     			      	  location.href = "<c:url value='main.do'/>"; 
      			        }
  					}
  					

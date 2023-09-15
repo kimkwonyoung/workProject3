@@ -2,7 +2,6 @@
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>    
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib uri="http://www.springframework.org/tags" prefix="s"%>
 <!DOCTYPE html>
 <html>
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>

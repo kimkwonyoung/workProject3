@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="s"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -35,7 +36,7 @@
     </div>
     <script src="<c:url value='/js/check.js'/>"></script>
 <script>
-var sMemid = "${sMemid}";
+var scMemNum = "${search.scMemNum}";
 /* var back = document.querySelector(".back-upwt");
 back.addEventListener("click", () => {
 	window.history.back();
@@ -46,22 +47,22 @@ $(".back-upwt").on("click", () => {
 
 $("#updateMem").on("click", () => {
 	const param = {
-			memberid: sMemid,
+			membernum: scMemNum,
 		    pwd: password.value,
 		    name: username.value,
 		    phone: tel.value,
 		  };
 	$.ajax({
-		url: "memberUpdate.do",
+		url: "<c:url value='/member/memberUpdate.do'/>",
 		type: "POST",
 		contentType: "application/json; charset=UTF-8",
 		data: JSON.stringify(param),
 		dataType: "json",
-		success: () => {
-			alert(json.message);
+		success: (json) => {
 		    if (json.status) {
+		    	alert("<s:message code='success.common.update' />");
 		    	//location.href = "<c:url value='memberInfo.do'/>"; 
-		    	location.href = "memberInfo.do"; 
+		    	location.href = "<c:url value='/member/memberInfo.do'/>"; 
 		    }
 		}
 	});

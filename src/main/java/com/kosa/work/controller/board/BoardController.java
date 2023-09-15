@@ -2,7 +2,9 @@ package com.kosa.work.controller.board;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -11,10 +13,15 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kosa.work.controller.PrtController;
 import com.kosa.work.service.impl.BoardServiceImpl;
 import com.kosa.work.service.model.BoardVO;
+import com.kosa.work.service.model.search.BoardSearchVO;
 
 /**게시판 컨트롤러
  * @author kky
@@ -22,11 +29,39 @@ import com.kosa.work.service.model.BoardVO;
  *
  */
 @Controller
+@RequestMapping("/board")
 public class BoardController extends PrtController {
-/*	
+	
 	@Autowired
 	private BoardServiceImpl _boardService;
 	
+	
+	//공지사항 게시판 목록(일반회원 읽기만)
+	@RequestMapping(value = "/noticeList.do")
+	public String noticeList(BoardSearchVO search, Model model) throws Exception {
+		if (search.getScRecodeCount() > 0)
+			search.setRecordCount(search.getScRecodeCount());
+		model.addAttribute("result", _boardService.noticeList(search));
+		model.addAttribute("search", search);
+		
+		return "admin/notice_list";
+	}
+	
+	//일반 게시판 목록
+	@RequestMapping(value = "/boardList.do")
+	public String boardList(BoardSearchVO search, Model model) throws Exception {
+		if (search.getScRecodeCount() > 0)
+			search.setRecordCount(search.getScRecodeCount());
+		
+		model.addAttribute("result", _boardService.noticeList(search));
+		model.addAttribute("search", search);
+		
+		return "board/board_list";
+	}
+	
+	
+	
+	/*	
 	public String boardList2(BoardVO board, HttpServletRequest request, HttpServletResponse response) throws Exception { 
 		request.setAttribute("boardList2", _boardService.selectByAddList(board));
 		return "board/board_list2.jsp";
@@ -129,13 +164,7 @@ public class BoardController extends PrtController {
 		return url;
 	}
 	
-//	//게시판 목록
-//	public String List(Board board, HttpServletRequest request, HttpServletResponse response) throws Exception {
-//		
-//		request.setAttribute("board_code", board.getBoard_code());
-//		request.setAttribute("result", _boardService.selectByBoardList(board));
-//		return "board/notice_list.jsp";
-//	}
+
 	
 	//일반게시판 목록
 	public String boardList(BoardVO board, HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -235,4 +264,16 @@ public class BoardController extends PrtController {
 		return jsonResult.toString();
 	}
 	*/
+	
+	
+	//jqGrid 테스트
+	@ResponseBody
+	@RequestMapping(value = "/boardList3.do")
+	public Map<String, List<BoardVO>> boardList3(@RequestBody BoardSearchVO search, Model model) throws Exception {
+		Map<String, List<BoardVO>> map = new HashMap<>();
+		
+		map.put("boardList", (List<BoardVO>) _boardService.boardList3(search));
+		
+		return map;
+	}
 }

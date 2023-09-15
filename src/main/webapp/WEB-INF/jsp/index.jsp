@@ -27,15 +27,15 @@
     <div id="contents">
       <div id="tabMenu">
         <input type="radio" id="tab1" name="tabs" checked>
-        <label for="tab1"><a href="<c:url value='/board/boardList.do?board_code=20'/>">공지사항</a></label>
+        <label for="tab1"><a href="<c:url value='/board/noticeList.do'/>">공지사항</a></label>
         <input type="radio" id="tab2" name="tabs">
         <label for="tab2">갤러리</label>
        	<input type="radio" id="tab3" name="tabs">
-        <label id = "boardTab" for="tab3"><a href="<c:url value='/board/boardList.do?board_code=10'/>">게시판</a></label>
+        <label id = "boardTab" for="tab3"><a href="<c:url value='/board/boardList.do'/>">게시판</a></label>
         <div id="notice" class="tabContent">
           <ul>
           <c:forEach var="notice" items="${noticeList }">           
-            <li><a href="<c:url value='/board/boardInfo.do?board_num=${notice.noticeNum }'/>">${notice.title }</a></li>
+            <li><a href="">${notice.title }</a></li>
           </c:forEach> 
           </ul>
         </div>
@@ -52,7 +52,7 @@
         <div id="board" class="tabContent">
           <ul>            
             <c:forEach var="nomal" items="${nomalList }">           
-            <li><a href="<c:url value='/board/boardInfo.do?board_num=${nomal.boardNum }'/>">${nomal.title }</a></li>
+            <li><a href="">${nomal.title }</a></li>
           </c:forEach> 
           </ul>
         </div>
@@ -119,7 +119,7 @@
 	        	<div id="mlist">
 	        		<ul>
 	        			<li>장바구니</li>
-	        			<li><a href="<c:url value='/member/memberFavorite.do?'/>" class="forlink">사진모음</a></li>
+	        			<li><a href="<c:url value='/member/memberFavorite.do'/>" class="forlink">사진모음</a></li>
 	        			<li>나의문의내역</li>
 	        		</ul>
 	        	        	
@@ -267,7 +267,7 @@
 	        css: {
 	            border: "1px solid gray",
 	            width: "355px",
-	            height: "480px"
+	            height: "510px"
 	        }
 	    });
 
@@ -334,8 +334,8 @@
 	
 	
 	var hrefArr = [
-		"<c:url value='/member/memberSearchMove.do?chkMem=findid'/>", 
-		"<c:url value='/member/memberSearchMove.do?chkMem=findpwd'/>",
+		"<c:url value='/member/memberSearchMove.do?type1=findid'/>", 
+		"<c:url value='/member/memberSearchMove.do?type1=findpwd'/>",
 		"<c:url value='/member/memberWrite.do'/>"
 		];
 

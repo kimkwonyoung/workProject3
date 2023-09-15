@@ -43,14 +43,59 @@
 		where memberid = #{memberid}
 	</select>
 	
+	<select id="selectMemberNum" parameterType="int" resultType="memberVO">
+		select
+		<include refid="select" />
+		from member
+		where membernum = #{membernum}
+	</select>
+	
+	<select id="selectSearchId" parameterType="memberVO" resultType="memberVO">
+		select 
+		<include refid="select" /> 
+		from member 
+		where name = #{name} 
+		and phone = #{phone}
+	</select>
+	
+	<select id="selectSearchPwd" parameterType="memberVO" resultType="memberVO">
+		select 
+		<include refid="select" /> 
+		from member 
+		where memberid = #{memberid} 
+		and name = #{name}
+	</select>
+	
+	<select id="selectbyCount" parameterType="String" resultType="int">
+		select count(*)
+		from member
+		where memberid = #{memberid}
+	</select>
+	
 	<insert id="callMemberInsert" parameterType="memberVO">
         {call member_insert(
-            #{memberid, jdbcType=VARCHAR, mode=IN},
-            #{name, jdbcType=VARCHAR, mode=IN},
-            #{pwd, jdbcType=VARCHAR, mode=IN},
-            #{phone, jdbcType=VARCHAR, mode=IN}
+            #{memberid, jdbcType=VARCHAR},
+            #{name, jdbcType=VARCHAR},
+            #{pwd, jdbcType=VARCHAR},
+            #{phone, jdbcType=VARCHAR}
         )}
     </insert>
+    
+    <update id="callMemberUpdate" parameterType="memberVO">
+    	{call member_update(
+	    	#{name, jdbcType=VARCHAR}, 
+	    	#{pwd, jdbcType=VARCHAR}, 
+	    	#{phone, jdbcType=VARCHAR}, 
+	    	#{membernum, jdbcType=INTEGER}
+    	)}
+    
+    </update>
+    
+     <delete id="deleteMember" parameterType="String">
+        {call member_delete(
+        	#{memberid, jdbcType=VARCHAR}
+        )}
+    </delete>
 	
 	
 </mapper>

@@ -27,6 +27,8 @@ public class BoardVO implements GeneralModel {
 	private String regDate;
 	private String modDate;
 	private int viewCount;
+	private int pid;
+	private int level;
 	
 //	private int nrow;
 //	private int count;

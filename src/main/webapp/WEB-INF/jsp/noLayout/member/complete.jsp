@@ -10,17 +10,17 @@
 </head>
 <body>
 	<div class="complete" id="link">
-    <p class="alert-message">${alertmessage}</p>
+    <p class="alert-message">${message}</p>
     <a class="back" href="#">돌아가기</a>
   </div>
   <script>
-  	var chkMem = '${chkMem}';
+  	var type1 = '${search.type1}';
   	//var link = document.querySelector('#link a');
   	
   	var href = 'memberWrite.do';
   	
-  	if(chkMem == 'findid' || chkMem =='findpwd') {
-  		href = 'memberSearchMove.do?chkMem=' + chkMem;
+  	if(type1 == 'findid' || type1 =='findpwd') {
+  		href = "<c:url value='/member/memberSearchMove.do?type1=" + type1 + "'/>"
   	}
   	
   	$("#link a").on("click", () => {

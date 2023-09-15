@@ -49,9 +49,9 @@ h1 {
 	background-color: #555;
 }
 
-a:nth-of-type(2) {
-	margin-left: 230px;
-}
+/* a:nth-of-type(2) { */
+/* 	margin-left: 230px; */
+/* } */
 
 a:nth-of-type(3) {
 	float:right;

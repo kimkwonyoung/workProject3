@@ -24,10 +24,10 @@
     </div>
   </div>
   <script>
-  	var memberid = "${loginMember.memberid}";
+  	var membernum = "${loginMember.membernum}";
   	//var links = document.querySelectorAll("#linklist a");
-    var hrefArr = ["<c:url value='/main/mainIndex.do'/>", 
-    			   "<c:url value='/member/memberUpdateMove.do?sMemid=" + memberid + "'/>",
+    var hrefArr = ["<c:url value='/main.do'/>", 
+    			   "<c:url value='/member/memberUpdateMove.do?scMemNum=" + membernum + "'/>",
     			   "<c:url value='/member/memberWithdrawMove.do'/>"];
 	
 /* 	for(var i = 0; i < links.length; i++) {

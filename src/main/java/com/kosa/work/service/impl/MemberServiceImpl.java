@@ -15,13 +15,16 @@ import com.kosa.work.service.model.MemberVO;
 import com.kosa.work.service.model.common.SearchVO;
 import com.kosa.work.service.model.search.MemberSearchVO;
 
+import lombok.extern.slf4j.Slf4j;
+
 /** 회원 비즈니스 로직
  * @author kky
  *
  */
+@Slf4j
 @Service("memberService")
 public class MemberServiceImpl extends BaseServiceImpl {
-	private static final Logger logger = LoggerFactory.getLogger(MemberServiceImpl.class);
+	
 	//회원 전체 목록
 	public List<MemberVO> memberList(MemberSearchVO search) {
 		return (List<MemberVO>) getDAO().selectList("member.selectMemberList", search);
@@ -53,129 +56,94 @@ public class MemberServiceImpl extends BaseServiceImpl {
 		return map;
 	}
 	
-	/*	
-	//아이디를 Key로 회원 조회
-	public MemberVO selectByMember(SearchVO search) {
-		return _dao.selectBySearch(QueryProperty.getQuery("member.selectMemid"), search);
-	}
-	
-	
-	
-	//아이디 비밀번호 찾기
-	public String selectBySearch(MemberVO mem, SearchVO search) {
-		MemberVO member = new MemberVO();
-		String message = "";
-		if (search.getChkMem().equals(CommonProperty.getFindid())) {
-			Optional<MemberVO> optionalMember = _dao.selectByName(QueryProperty.getQuery("member.selectName"), mem);
-			if (optionalMember.isPresent()) {
-				member = optionalMember.get();
-				message = CommonProperty.getMessageFid() + member.getMemberid();
-			} else {
-				message = CommonProperty.getMessageMissid();
-			}
-		} else if (search.getChkMem().equals(CommonProperty.getFindpwd())) {
-			Optional<MemberVO> optionalMember = _dao.selectByIdName(QueryProperty.getQuery("member.selectIdName"), mem);
-			if (optionalMember.isPresent()) {
-				member = optionalMember.get();
-				message = CommonProperty.getMessageFpwd() + member.getPwd();
-			} else {
-				message = CommonProperty.getMessageMisspwd();
-			}
-		}
-		return message;
-	}
-	
-	//존재 하는 회원 카운트
-	public JSONObject existMember(String memberid) throws Exception {
-		JSONObject jsonResult = new JSONObject();
-		if (_dao.selectByCount(QueryProperty.getQuery("member.selectCount"), memberid)) {
-			jsonResult.put("status", true);
-			jsonResult.put("message", CommonProperty.getMessageExist());
-		} else {
-			jsonResult.put("status", false);
-			jsonResult.put("message", CommonProperty.getMessagePossibleId());
-		}
-		
-		return jsonResult;
-	}
-	
-	//회원 가입
-	public JSONObject insert(MemberVO mem) throws Exception {
-		JSONObject jsonResult = new JSONObject();
-		
-//		일반 쿼리 적용 로직
-//		if (_dao.insert(QueryProperty.getQuery("member.insert"), mem) == 1) {
-//			jsonResult.put("status", true);
-//			jsonResult.put("message", CommonProperty.getMessageInsertSuccess());
-//		} else {
-//			jsonResult.put("status", false);
-//			jsonResult.put("message", CommonProperty.getMessageExist());
-//		}
-//		
-//		프로시저 적용 로직
-		if (_dao.insert_ProcedureCall(mem)) {
-			jsonResult.put("status", true);
-			jsonResult.put("message", CommonProperty.getMessageInsertSuccess());
-		} else {
-			jsonResult.put("status", false);
-			jsonResult.put("message", CommonProperty.getMessageExist());
-		}
-		
-		return jsonResult;
-	}
-
-	
-	
 	//회원 정보 수정
-	public JSONObject update(MemberVO mem) throws Exception {
-		JSONObject jsonResult = new JSONObject();
-		SearchVO search = new SearchVO();
-		search.setsMemid(mem.getMemberid());
-		
-//		정보수정 일반 쿼리 로직
-//		int row = _dao.update(QueryProperty.getQuery("member.update"), mem);
-//		if (row > 0) {
-//			jsonResult.put("status", true);
-//			jsonResult.put("message", CommonProperty.getMessageUpdate());
-//			jsonResult.put("member", _dao.selectBySearch(QueryProperty.getQuery("member.selectMemid"), search));
-//		}
-		
-//		정보수정 프로시저 로직
-		if (_dao.update_ProcedureCall(mem)) {
-			jsonResult.put("status", true);
-			jsonResult.put("message", CommonProperty.getMessageUpdate());
-			jsonResult.put("member", _dao.selectBySearch(QueryProperty.getQuery("member.selectMemid"), search));
-		} else {
-			jsonResult.put("status", false);
+	public boolean update(MemberVO mem) throws Exception {
+		boolean status = false;
+//		log.info(">>>>>>>>>>>" + getDAO().update("member.callMemberUpdate", mem));
+		if (getDAO().update("member.callMemberUpdate", mem) < 0) {
+			status = true;
 		}
-		
-		return jsonResult;
+		return status;
+	}
+	
+	//회원 번호로 회원 조회
+	public MemberVO selectByMemberNum(int num) {
+		return (MemberVO) getDAO().selectOne("member.selectMemberNum", num);
 	}
 	
 	//회원 탈퇴 
-	public JSONObject delete(MemberVO mem) {
-		JSONObject jsonResult = new JSONObject();
-		MemberVO member;
-		try {
-			member = _dao.checkIdPwd(QueryProperty.getQuery("member.selectMemid"), mem);
-			if (member != null) {
-				jsonResult.put("status", true);
-				jsonResult.put("message", CommonProperty.getMessageWithdraw());
-				
-				//회원 탈퇴 일반 쿼리 로직
-//				_dao.delete(QueryProperty.getQuery("member.delete"), member);
-				
-				//회원 탈퇴 프로시저 로직
-				_dao.delete_ProcedureCall(member);
-				
-			} else {
-				jsonResult.put("status", false);
-				jsonResult.put("message", CommonProperty.getMessageMemMiss());
+	public boolean delete(MemberVO mem) {
+		boolean status = false;
+		MemberVO loginMember = (MemberVO) getDAO().selectOne("member.selectMemberId", mem.getMemberid());
+		if (loginMember != null) {
+			if (loginMember.isEqualPwd(mem))  {
+				getDAO().delete("member.deleteMember", mem);
+				status = true;
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
-		return jsonResult;
+		return status;
 	}
-	*/
+	
+	//아이디 비밀번호 찾기
+	public String selectBySearch(MemberVO mem, MemberSearchVO search) {
+		MemberVO member = new MemberVO();
+		String message = "";
+		
+		if (search.getType1().equals("findid")) {
+			member = (MemberVO) getDAO().selectByKey("member.selectSearchId", mem);
+			if (member != null) {
+				message = "찾으려는 아이디 = " + member.getMemberid();
+			} else {
+				message = "이름 또는 휴대폰 번호가 다릅니다";
+			}
+		} else if (search.getType1().equals("findpwd")) {
+			member = (MemberVO) getDAO().selectByKey("member.selectSearchPwd", mem);
+			if (member != null) {
+				message = "찾으려는 비밀번호= " + member.getPwd();
+			} else {
+				message = "아이디 또는 이름이 다릅니다";
+			}
+		}
+		return message;
+		
+//		if (search.getChkMem().equals(CommonProperty.getFindid())) {
+//			Optional<MemberVO> optionalMember = _dao.selectByName(QueryProperty.getQuery("member.selectName"), mem);
+//			if (optionalMember.isPresent()) {
+//				member = optionalMember.get();
+//				message = CommonProperty.getMessageFid() + member.getMemberid();
+//			} else {
+//				message = CommonProperty.getMessageMissid();
+//			}
+//		} else if (search.getChkMem().equals(CommonProperty.getFindpwd())) {
+//			Optional<MemberVO> optionalMember = _dao.selectByIdName(QueryProperty.getQuery("member.selectIdName"), mem);
+//			if (optionalMember.isPresent()) {
+//				member = optionalMember.get();
+//				message = CommonProperty.getMessageFpwd() + member.getPwd();
+//			} else {
+//				message = CommonProperty.getMessageMisspwd();
+//			}
+//		}
+		
+	}
+	
+	//존재 하는 회원 카운트
+	public boolean existMember(String memberid) throws Exception {
+		boolean status = false;
+		int row = (int) getDAO().selectOne("member.selectbyCount", memberid);
+		if (row > 0) {
+			status = true;
+		}
+		return status;
+	}
+	
+	//회원 가입
+	public boolean insert(MemberVO mem) throws Exception {
+		boolean status = false;
+//		log.info(">>>>>>>>>>>>>>>>>" + getDAO().insert("member.callMemberInsert", mem));
+		int row = getDAO().insert("member.callMemberInsert", mem);
+		if (row < 0) status = true;
+		
+		return status;
+	}
+	
 }

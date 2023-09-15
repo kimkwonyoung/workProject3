@@ -9,7 +9,7 @@
 </head>
 <body>
 
-<form name="mForm" id="mForm" action="<c:url value='/admin/noticeList.do'/>" method="post" >
+<form name="mForm" id="mForm" <%-- action="<c:url value='/admin/noticeList.do'/>" --%> method="get" >
 	
   <div class="list-all" id="container">
     <div class="board-header">
@@ -138,6 +138,11 @@
 <script>
 $(document).ready(function() {
 	const currentUrl = window.location.href;
+	if (currentUrl.includes("admin")) {
+		$("#mForm").attr("action", "<c:url value='/admin/noticeList.do'/>");
+	} else if (currentUrl.includes("board")) {
+		$("#mForm").attr("action", "<c:url value='/board/noticeList.do'/>");
+	}
 	
 	if (currentUrl.includes("admin")) {
 		$(".link-header").css("display", "block");
@@ -316,6 +321,7 @@ $("#wr").on("click", () => {
 // }
 
 $("#mForm").on("submit", () => {
+	
 	return true;
 });
 

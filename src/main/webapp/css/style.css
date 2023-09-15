@@ -513,10 +513,6 @@ p {
 	font-size: 16px;
 	background: none;
 	border: none;
-	width: 0px;
-	height: 0px;
-	margin-top: -30px;
-	margin-right: -10px;
 }
 
 .form-group-insert {
@@ -668,7 +664,9 @@ p {
 	color:#39393933;
 }
 
-
+/*********************************/
+/* 페이징 버튼  */
+/*********************************/
 
 .btn_prev1 {
 	padding:15px;

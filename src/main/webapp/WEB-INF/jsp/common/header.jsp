@@ -28,11 +28,11 @@
         </li>
         <li><a href="#">문의하기</a></li>
         <li>
-<c:if test="${empty loginMember.memberid eq 'admin' }">        
+<c:if test="${loginMember.memberid eq 'admin' }">        
 	<a href="#" class="openbtn">관리자 메뉴 열기</a>
 	<div class="sidebar">
 		<a href="<c:url value='/admin/memberList.do'/>" class="forlink">전체 회원 보기</a>
-		<a href="<c:url value='/admin/noticeList.do?scCode=20'/>" class="forlink">공지사항 게시판</a>
+		<a href="<c:url value='/admin/noticeList.do?'/>" class="forlink">공지사항 게시판</a>
 <%-- 		<a href="<c:url value='/board/boardList.do?board_code=10'/>" class="forlink">일반 게시판</a> --%>
 		
 <%-- 		<a href="<c:url value='/board/boardList2.do'/>" class="forlink">일반 더보기 게시판</a> --%>

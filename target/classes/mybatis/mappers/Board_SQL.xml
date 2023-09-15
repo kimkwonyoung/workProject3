@@ -16,26 +16,26 @@
 	
 	</resultMap>
 	<sql id="select">
-		board_num, mem_id, title, content, reg_date, mod_date, view_count
+		board_num, mem_id, title, content, reg_date, mod_date, view_count, pid
 	</sql>
 	
-<!-- 	<sql id="whereClause"> -->
-<!-- 		<trim prefix="where" prefixOverrides="and"> -->
-<!-- 			<if test="searchWord != null and searchWord != ''"> -->
-<!-- 				<choose> -->
-<!-- 					<when test="type1 == 'title'"> -->
-<!-- 						and title like concat(concat('%', #{searchWord}), '%') -->
-<!-- 					</when> -->
-<!-- 					<when test="type1 == 'mem_id'"> -->
-<!-- 						and mem_id like concat(concat('%', #{searchWord}), '%') -->
-<!-- 					</when> -->
-<!-- 					<otherwise> -->
-<!-- 						and (title like concat(concat('%', #{searchWord}), '%') or mem_id like concat(concat('%', #{searchWord}), '%') -->
-<!-- 					</otherwise> -->
-<!-- 				</choose> -->
-<!-- 			</if> -->
-<!-- 		</trim> -->
-<!-- 	</sql> -->
+	<sql id="whereClause">
+		<trim prefix="where" prefixOverrides="and">
+			<if test="searchWord != null and searchWord != ''">
+				<choose>
+					<when test="type1 == 'title'">
+						and title like concat(concat('%', #{searchWord}), '%')
+					</when>
+					<when test="type1 == 'mem_id'">
+						and mem_id like concat(concat('%', #{searchWord}), '%')
+					</when>
+					<otherwise>
+						and (title like concat(concat('%', #{searchWord}), '%') or mem_id like concat(concat('%', #{searchWord}), '%')
+					</otherwise>
+				</choose>
+			</if>
+		</trim>
+	</sql>
 	
 	<select id="selectMainBoard" resultType="boardVO">
 		select
@@ -45,27 +45,24 @@
 		order by board_num desc
 	</select>
 	
-<!-- 	<select id="totalCount" parameterType="search" resultType="int"> -->
-<!-- 		select count(*) -->
-<!-- 		from board -->
-<!-- 		<include refid="whereClause" /> -->
-<!-- 	</select> -->
+	
+	<select id="totalCount" parameterType="search" resultType="int">
+		select count(*)
+		from board
+		<include refid="whereClause" />
+	</select>
 
-<!-- 	<select id="selectBoardList" parameterType="search" resultType="boardVO"> -->
-<!-- 		<include refid="paging.top" /> -->
-<!-- 		select /*+ index_desc(a PK_BOARD) */ a.* -->
-<!-- 		from board a -->
-<!-- 		<include refid="whereClause" /> -->
-<!-- 		<choose> -->
-<!-- 			<when test="orderBy != ''"> -->
-<!-- 				order by ${orderBy } -->
-<!-- 			</when> -->
-<!-- 			<otherwise> -->
-<!-- 				order by fixed_yn desc -->
-<!-- 			</otherwise> -->
-<!-- 		</choose> -->
-<!-- 		<include refid="paging.bottom" /> -->
-<!-- 	</select> -->
+	<select id="selectBoardList" parameterType="search" resultType="boardVO">
+		<include refid="paging.top" />
+		select 
+    	level, pid, board_num, mem_id, title, content, reg_date, mod_date, view_count
+		from board
+		<include refid="whereClause" />
+		start with pid=0
+		CONNECT BY PRIOR board_num = pid
+		order SIBLINGS by board_num desc
+		<include refid="paging.bottom" />
+	</select>
 
 	
 </mapper>

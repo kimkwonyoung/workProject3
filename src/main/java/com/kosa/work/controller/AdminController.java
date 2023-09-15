@@ -110,8 +110,6 @@ public class AdminController extends PrtController {
 		Map<String, NoticeVO> map = new HashMap<String, NoticeVO>();
 		_boardService.insert(notice);
 		
-		logger.debug(">>>>>>>>>>" + notice);
-		
 		map.put("noticeRow", _boardService.noticeNewOne(notice));
 		
 		return map;

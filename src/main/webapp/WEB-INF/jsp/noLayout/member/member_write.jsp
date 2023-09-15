@@ -43,18 +43,19 @@ $("#existUid").on("click", () => {
 	const param = {memberid: userid.value};
 	
 	$.ajax({
-		url: "memberExist.do",
+		url: "<c:url value='/member/memberExist.do'/>",
 		type: "POST",
 		contentType: "application/json; charset=UTF-8",
 		data: JSON.stringify(param),
 		dataType: "json",
-		success: () => {
-		alert(json.message);
+		success: (json) => {
 	       if (json.status) {
+	    	   alert("아이디가 존재 합니다");
 	    	   userid.value = "";
 	    	   userid.focus();
 	  	       existUidChecked = false;
 	       } else {
+	    	   alert("사용 가능한 아이디 입니다");
 	    	   existUidChecked = true;
 	       }
 		}
@@ -99,14 +100,14 @@ $("#register").on("click", () => {
 	      };
 	
 	$.ajax({
-		url: "memberInsert.do",
+		url: "<c:url value='/member/memberInsert.do'/>",
 		type: "POST",
 		contentType: "application/json; charset=UTF-8",
 		data: JSON.stringify(param),
 		dataType: "json",
-		success: () => {
-		alert(json.message);
+		success: (json) => {
           if (json.status) {
+        	  alert("회원가입 성공");
         	  window.parent.postMessage("closeIframe", "*");
           	}
 		}

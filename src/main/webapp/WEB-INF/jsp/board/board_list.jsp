@@ -4,34 +4,24 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-
 <link rel="stylesheet" href="<c:url value='/css/board.css'/>">
-
   <title>게시판 목록</title>
 </head>
 <body>
-<form name="pageForm" id="pageForm" action="<c:url value='/board/boardList.do'/>" method="post" >
-		<input type="hidden" name="pageNo" id="pageNo" value="${result.pageBoard.pageNo}" />
-		<input type="hidden" name="searchTitle" id="searchTitle" value="${result.pageBoard.searchTitle}" >
-		<input type="hidden" name="pageLength" id="pageLength" value="${result.pageBoard.pageLength}" >
-		<input type="hidden" name="board_code" value="${requestScope.board_code}" >
-</form>
-<form name="mForm" id="mForm" action="<c:url value='/board/boardList.do'/>" method="post" >
-	<input type="hidden" name="pageNo" id="pageNo" value="${result.pageBoard.pageNo}" />
-	<input type="hidden" name="board_code" value="${requestScope.board_code}" />
+
+<form name="mForm" id="mForm" action="<c:url value='/board/boardList.do'/>" method="get" >
 	
   <div class="list-all" id="container">
     <div class="board-header">
-    
-    <c:if test="${loginMember.memberid eq 'admin' }">
-      <div class="link-header">
+      <div class="link-header" style="display:none">
           <a class="write-button" id="del">글삭제</a>
+	      <a class="write-button" id="wr" href="#">글쓰기</a> 
       </div>
-     </c:if>
     </div>
+    
 
-    <table>
-    <caption class="board-title">일반 게시판</caption>
+    <table id="noticeTable">
+    <caption class="board-title">공지사항 게시판</caption>
       <thead>
         <tr>
           <th class="checkbox-all"><input type="checkbox" id="checkAll"></th>
@@ -40,45 +30,34 @@
           <th>작성자</th>
           <th>작성일</th>
           <th>조회수</th>
-          <th>삭제</th>
         </tr>
       </thead>
-      <tbody id ="board_list">
-      <c:forEach var="notice" items="${result.notice }">
+      <tbody id="noticelist">
+      <c:forEach var="notice" items="${result.noticeList }">
        <tr class="highlight">
-      	  <td class="checkbox-cell"></td>
-          <td>${notice.board_num }</td>
-          <td><a href="<c:url value='boardInfo.do?board_num=${notice.board_num }&board_code=${notice.board_code}'/>">${notice.title}</a></td>
-          <td>${notice.mem_id }</td>
-          <td>${notice.mod_date }</td>
-          <td>${notice.view_count }</td>
-          <td></td>
+      	  <td class="checkbox-cell"><input type="checkbox" name="chkBoardNum" class="chkbox" value="${notice.noticeNum }"></td>
+          <td>${notice.noticeNum }</td>
+          <td><a href="#" onclick="info(${notice.noticeNum}, 'notice')">${notice.title}</a></td>
+          <td>${notice.memId }</td>
+          <td>${notice.modDate }</td>
+          <td>${notice.viewCount }</td>
        </tr>
       </c:forEach>
+      </tbody>
+      <tbody id="noticebottom">
+      
        <c:forEach var="board" items="${result.list}">
         <tr>
-          <td class="checkbox-cell"><input type="checkbox" name="chkBoardNum" class="chkbox"></td>
-          <td>${board.board_num }</td>
-          <td><a href="<c:url value='boardInfo.do?board_num=${board.board_num }&board_code=${board.board_code}'/>">${board.title}</a></td>
-          <td>${board.mem_id }</td>
-          <td>${board.mod_date }</td>
-          <td>${board.view_count }</td>
-          <td><input type="button" value="삭제" class="checkDel" onclick="deleteChk(this)"></td>
+          <td class="checkbox-cell"><input type="checkbox" name="chkBoardNum" class="chkbox" value="${board.noticeNum }"></td>
+          <td>${board.noticeNum }</td>
+          <td><a href="#" onclick="info(${board.noticeNum}, 'board')">${board.title}</a></td>
+          <td>${board.memId }</td>
+          <td>${board.modDate }</td>
+          <td>${board.viewCount }</td>
         </tr>
         </c:forEach>
-        
-        <tr id="boardItem" style="display:none">
-          <td class="checkbox-cell"><input type="checkbox" name="chkBoardNum" class="chkbox"></td>
-          <td id="boardN"></td>
-          <td><a href="<c:url value='boardInfo.do?board_num={bodnum }&board_code={bodcode}'/>" id="title"></a></td>
-          <td id="memId"></td>
-          <td id="mod_date"></td>
-          <td id="view_count"></td>
-          <td><input type="button" value="삭제" class="checkDel" onclick="deleteChk(this)"></td>
-        </tr> 
-        
       </tbody>
-      <c:if test="${empty result.list}">
+      <c:if test="${search.totalCount <= 0}">
 	  <tr>
 	      <td colspan=6>검색결과가 없습니다</td>
 	  </tr>
@@ -86,175 +65,320 @@
     </table>
    <div class="tableDiv">
    	<div class="selectBox">
-	<select name="pageLength" id="pageLength" class="pagelen" >
-		<option value="10" ${result.pageBoard.pageLength == 10 ? 'selected="selected"' : ''} >10건</option>
-		<option value="20" ${result.pageBoard.pageLength == 20 ? 'selected="selected"' : ''} >20건</option>
-		<option value="50" ${result.pageBoard.pageLength == 50 ? 'selected="selected"' : ''} >50건</option>
-		<option value="100" ${result.pageBoard.pageLength == 100 ? 'selected="selected"' : ''} >100건</option>
+	<select name="scRecodeCount" id="pageLength" class="pagelen" >
+		<option value="10" ${search.scRecodeCount == 10 ? 'selected="selected"' : ''} >10건</option>
+		<option value="20" ${search.scRecodeCount == 20 ? 'selected="selected"' : ''} >20건</option>
+		<option value="50" ${search.scRecodeCount == 50 ? 'selected="selected"' : ''} >50건</option>
+		<option value="100" ${search.scRecodeCount == 100 ? 'selected="selected"' : ''} >100건</option>
 	</select>
     </div>  
   </div>
-  <div style="text-align: center;margin-bottom:20px;">
-      	<c:if test="${result.pageBoard.navStart != 1}">
-      		<a href="javascript:jsPageNo(${result.pageBoard.navStart-1})" style="padding: 13px;"> 이전 &lt; </a> 
-      	</c:if>
-      	<c:forEach var="item" begin="${result.pageBoard.navStart}" end="${result.pageBoard.navEnd}">
-      		<c:choose>
-      			<c:when test="${result.pageBoard.pageNo != item }">
-      				<a href="javascript:jsPageNo(${item})" class="pageTag" style="padding: 13px;">${item}</a>  
-      			</c:when>
-      			<c:otherwise>
-      				<strong class="pageStrong">${item}</strong>   
-      			</c:otherwise>
-      		</c:choose>
-      	</c:forEach>
-      	<c:if test="${result.pageBoard.navEnd != result.pageBoard.totalPageSize}">
-      		<a href="javascript:jsPageNo(${result.pageBoard.navEnd+1})" style="padding: 13px;"> 다음 &gt; </a> 
-      	</c:if>
-    </div>
-
+  <%@ include file="/WEB-INF/jsp/common/inc-paging-admin.jsp"%>
     
-    <div style="margin:0px auto;">
+    <div style="margin:0px auto; margin-top: 20px;">
 		<div style="display: flex; margin:0px auto; width:60%; justify-align: center">
 			<div class="selectBox">
-			<select name="searchType" class="searchType" >
-				<option value="">제목</option>
-				<option value="">작성자</option>
-				<option value="">글번호</option>
-				<option value="">작성일</option>
+			<select name="type1" class="searchType" >
+				<option value="title">제목</option>
+				<option value="mem_id">작성자</option>
+				
 			</select>
 			</div>
-			<input type="text" name="searchTitle" id="searchTitle" value="${result.pageBoard.searchTitle}" style="flex:1">
+			<input type="text" name="searchWord" id="searchTitle" value="${search.searchWord}" style="flex:1">
 			<input type="submit" value="검색" class="searchButton"/>
 		</div>
 	
 	</div>
-  
-    
   </div>
-  
-   
 </form>
+<!-- 게시판 글 작성하기  -->
+<div id="dialogWrite" title="글 쓰기">
+<label for="title">제목:</label><br>
+      <input type="text" id="writeTitle" name="title" class="form-input"><br>
+
+      <label for="content">내용:</label><br>
+      <textarea id="writeContent" name="content" rows="10" class="form-input"></textarea><br>
+      
+      <input type="checkbox" id="fixed-yn" name="fixedYn" value="Y">
+      <label class="" id="fixed">상단 고정</label>
+</div>
+
+<!-- 게시판 글 수정하기  -->
+<div id="dialogUpdate" title="글 수정">
+<label for="title">제목:</label><br>
+      <input type="text" id="updateTitle" name="title" class="form-input"><br>
+
+      <label for="content">내용:</label><br>
+      <textarea id="updateContent" name="content" rows="10" class="form-input"></textarea><br>
+      <input type="checkbox" id="fixed-yn" name="fixedYn" value="Y">
+      <label class="" id="fixed">상단 고정</label>
+</div>
+
+<!-- 게시판 글 상세보기 -->
+<div id="dialogInfo" title="">
+<input type="hidden" id="infoNoticenum" value="">
+	<div>
+      <p class="post-meta" id="post-meta">작성자: <span id="author"></span> | 작성일: <span id="date"></span> | 조회수: <span id="views"></span></p>
+      <div class="post-content" id="post-content">
+      </div>
+    </div>
+</div>
+
+<c:set var="loginmem" value="${loginMember }" />
+
+
+<script id="noticeTemplate" type="text/x-jsrender">
+	<tr>
+    	<td class="checkbox-cell"><input type="checkbox" name="chkBoardNum" class="chkbox" value="{{:noticeNum}}"></td>
+    	<td>{{:noticeNum}}</td>
+    	<td><a href="#" onclick="info({{:noticeNum}})">{{:title}}</a></td>
+    	<td>{{:memId}}</td>
+    	<td>{{:modDate }}</td>
+    	<td>{{:viewCount }}</td>
+	</tr>
+</script>
 	
 <script>
+$(document).ready(function() {
+	const loginmem = "${loginmem}";
+	console.log(loginmem);
+	if (loginmem !== null) {
+        $(".link-header").css("display", "block");
+    }
+	
+	const currentUrl = window.location.href;
+    $("#dialogInfo").dialog({
+        autoOpen: false,
+        modal: true,
+        width: 1000,
+        height: 800,
+        buttons: {
+       		"글 수정": function() {
+       		 const type = $("#dialogInfo").data("type");
+       			if (type === "board") {
+           			const noticenum = $("#infoNoticenum").val();
+       				openUpdate(noticenum);
+       			} else if (type === "notice") {
+       				alert("관리자만 수정 가능");
+       			}
+       		},
+            "Close": function() {
+                $(this).dialog("close");
+            }
+    		
+        }
+    });
+    $("#dialogWrite").dialog({
+        autoOpen: false,
+        modal: true,
+        width: 800,
+        height: 500,
+        buttons: {
+        	"글 작성": function() {
+        		addWrite();
+        		$(this).dialog("close");
+        	},
+            "Close": function() {
+                $(this).dialog("close");
+            }
+        }
+    });
+    $("#dialogUpdate").dialog({
+        autoOpen: false,
+        modal: true,
+        width: 800,
+        height: 500,
+        buttons: {
+        	"글 수정 완료": function() {
+        		const noticenum = $("#dialogUpdate").data("noticenum");
+        		addUpdate(noticenum)
+        		$(this).dialog("close");
+        	},
+            "Close": function() {
+                $(this).dialog("close");
+            }
+        }
+    });
+});
+
+function addUpdate(noticenum) {
+	const fixedYn = $("#fixed-yn").is(":checked") ? "Y" : "N";
+	const param = {
+	        noticeNum: noticenum,
+	        title: $("#updateTitle").val(),
+	        content: $("#updateContent").val(),
+	        fixedYn: fixedYn
+	      };
+    
+	$.ajax({
+		url: "<c:url value='/admin/noticeUpdate.do'/>",
+		type: "POST",
+		contentType: "application/json; charset=UTF-8",
+		data: JSON.stringify(param),
+		dataType: "json",
+		success: (json) => {
+			location.reload();
+		}
+	});
+	
+	$("#dialogInfo").dialog("close");
+	
+}
+
+function openUpdate(noticenum) {
+	console.log(noticenum)
+	const param = {
+	        noticeNum: noticenum,
+	      };
+    
+	$.ajax({
+		url: "<c:url value='/admin/noticeInfo.do'/>",
+		type: "POST",
+		contentType: "application/json; charset=UTF-8",
+		data: JSON.stringify(param),
+		dataType: "json",
+		success: (json) => {
+	       	const notice = json.noticeInfo;
+	   		$("#updateTitle").val(notice.title);
+	   		$("#updateContent").html(notice.content);
+	   		if (notice.fixedYn === "Y") {
+	   			$("#fixed-yn").prop("checked", true);
+	   		}
+   		  
+		}
+	});
+	$("#dialogUpdate").data("noticenum", noticenum).dialog("open");
+	
+}
+
+function addWrite() {
+	const fixedYn = $("#fixed-yn").is(":checked") ? "Y" : "N";
+	const param = {
+			title: $("#writeTitle").val(),
+			content: $("#writeContent").val(),
+			memId: "admin",
+			fixedYn: fixedYn
+			
+	      };
+    
+	$.ajax({
+		url: "<c:url value='/admin/noticeWrite.do'/>",
+		type: "POST",
+		contentType: "application/json; charset=UTF-8",
+		data: JSON.stringify(param),
+		dataType: "json",
+		success: (json) => {
+		  const notice = json.noticeRow;
+		  const noticeTemplate = $("#noticeTemplate").html();
+		  const tmpl = $.templates(noticeTemplate);
+		  const renderedNotice = tmpl.render(notice);
+		  
+		  const noticeListHTML = $("#noticebottom");
+		  $(noticeListHTML).prepend(renderedNotice);
+
+		}
+	});
+	
+}
+
+function info(noticenum, type) {
+    const param = {
+	        noticeNum: noticenum,
+	      };
+    
+	$.ajax({
+		url: "<c:url value='/admin/noticeInfo.do'/>",
+		type: "POST",
+		contentType: "application/json; charset=UTF-8",
+		data: JSON.stringify(param),
+		dataType: "json",
+		success: (json) => {
+	       	const info = json.noticeInfo;
+	       		  
+	    	$("#infoNoticenum").val(info.noticeNum);
+	     	$("#author").text(info.memId);
+	     	$("#date").text(info.modDate);
+	     	$("#views").text(info.viewCount);
+	     	$("#post-content").html(info.content);
+	     	$("#dialogInfo").dialog("option", "title", info.title);
+			
+		}
+	});
+	$("#dialogInfo").data("type", type).dialog("open");
+}
+
+$("#wr").on("click", () => {
+	$("#writeTitle").text("");
+	$("#writeContent").text("");
+	$("#dialogWrite").dialog("open");
+})
+
+// $.Nav('parent', './notice_list.do', {bseq:'', srcWorkTpCd:''}, null, true);
+// $.Nav('go', './price_proc.do',{srcPriceSeq:seq, status:'d',});
+
+// function goPage(index) {
+// 	$.Nav('go', location.pathname, {'cpage': index, });
+// }
+
 $("#mForm").on("submit", () => {
-	$("#mform > #pageNo").val(1);
+	
 	return true;
 });
 
-function jsPageNo(pageNo) {
-	$("#pageForm > #pageNo").val(pageNo);
-	$("#pageForm").submit();
-}
+
+
 
 //체크 박스 전체 선택
 $("#checkAll").on("click", () => {
 	$(".chkbox").prop("checked", $("#checkAll").prop("checked"));
 });
-var board_code = '${board_code}';
-var pageNo = $("#pageNo").val();
-var pageLength = $("#pageLength").val();
 
-function innerHtml(list) {
-	  const boardItem = $("#boardItem");
-	  const boardListHTML = $("#board_list");
-	  
-	  for (let i=0; i<list.length; i++) {
-		  const board = list[i];
-		  const newBoardItem = boardItem.clone(true);
-		  const title = newBoardItem.find("#title");
-		  
-		  const boardNum = board.board_num;
-		  const boardCode = board.board_code;
-			  
-	   	  title.text(board.title);
-	   	  title.attr("href", title.attr("href").replace("{bodnum}", board.board_num));
-	      title.attr("href", title.attr("href").replace("{bodcode}", board.board_code));
-
-	      
-	      $(title).attr("href", $(title).attr("href").replace("{bodnum }", board.board_num));
-	      $(title).attr("href", $(title).attr("href").replace("{bodcode}", board.board_code));
-	      
-	   	  newBoardItem.find("#boardN").text(board.board_num);
-	      newBoardItem.find("#memId").text(board.mem_id);
-	      newBoardItem.find("#mod_date").text(board.mod_date);
-	      newBoardItem.find("#view_count").text(board.view_count);
-	
-	   	  newBoardItem.show();
-		  boardListHTML.append(newBoardItem);
-	  }
-}
-function deleteChk(btn) {
-    const tr = $(btn).closest("tr");
-    const boardNumCell = tr.find("td:nth-child(2)");
-    const boardNum = boardNumCell.text().trim();
-    
-    const param = {
-	        board_num: boardNum,
-	        board_code: board_code,
-	        pageNo: pageNo,
-	        pageLength: pageLength,
-	      };
-    
-		$.ajax({
-			url: "<c:url value='/board/ajaxDeleteChkOne.do'/>",
-			type: "POST",
-			contentType: "application/json; charset=UTF-8",
-			data: JSON.stringify(param),
-			dataType: "json",
-			success: (json) => {
-			  let html = "";
-	          if (json.status) {
-	        	  const bod = json.bod;
-	        	  alert(json.message);
-	        	  $(tr).css("display", "none");
-	        	  innerHtml(bod);
-
-	          } else {
-	        	  alert(json.message);
-	          }
-				
-			}
-		});
-	return false;
-}
-   
-//체크 박스 선택한것 삭제
-$("#del").on("click", (event) => {		
+$("#del").on("click", (event) => {
 	if (confirm('정말로 삭제 하시겠습니까?')) {
-		var count = 0;
-		var deleteStr = "";
+// 		var count = 0;
+// 		var deleteStr = "";
+		const checkedNoticeNums = [];
+		var isChk = true;
+		
 		$("input[name='chkBoardNum']").each((i, chkbox) => {
 		    if ($(chkbox).prop("checked")) {
-		        count++;
+// 		        count++;
+// 		        var boardNumCell = row.find('td:nth-child(2)');
+// 		        var boardNum = boardNumCell.text().trim();
+// 		        deleteStr += boardNum + ',';
+		        const noticeNum = $(chkbox).val(); 
+		        checkedNoticeNums.push(noticeNum); // 배열에 추가
 		        var row = $(chkbox).closest('tr');
-		        
-		        var boardNumCell = row.find('td:nth-child(2)');
-		        var boardNum = boardNumCell.text().trim();
-		        deleteStr += boardNum + ',';
 		        row.css("display", "none");
+		        isChk = false;
 		    }
 		});
-		if (deleteStr == '') {
+		if (isChk) {
 			alert('삭제할 글을 선택 하세요.');
 		} else {
-			deleteStr = deleteStr.substr(0, deleteStr.length - 1);
+// 			deleteStr = deleteStr.substr(0, deleteStr.length - 1);
+// 			search.paging.pageIndex : 현재 페이지 (cpage)
 			const param = {
-					 	count: count,
-				        board_code: board_code,
-				        pageNo: pageNo,
-				        pageLength: pageLength,
-				        deleteStr: deleteStr,
+// 					 	count: count,
+// 				        deleteStr: deleteStr,
+						scNoticeChkNum: checkedNoticeNums,
+						scNoticeNum: $("#noticeTable tbody:last tr:last-child td:nth-child(2)").text(),
 				      };
 			$.ajax({
-				url: "<c:url value='/board/ajaxDeleteChkAll.do'/>",
+				url: "<c:url value='/admin/noticeDelete.do'/>",
 				type: "POST",
 				contentType: "application/json; charset=UTF-8",
 				data: JSON.stringify(param),
 				dataType: "json",
 				success: (json) => {
-					const bod = json.bodChk;
-					innerHtml(bod);
+					const notice = json.noticeList;
+					const noticeTemplate = $("#noticeTemplate").html();
+					const tmpl = $.templates(noticeTemplate);
+					const noticeListHTML = $("#noticebottom");
+					  
+					const renderedNotice = tmpl.render(notice);
+					$(noticeListHTML).append(renderedNotice);
+					
 				}
 			});		
 		}
@@ -263,6 +387,30 @@ $("#del").on("click", (event) => {
         return false;
     }
 });
+
+/* var deleteLink = document.getElementById('del');
+deleteLink.addEventListener('click', (event) => {		
+	if (confirm('정말로 삭제 하시겠습니까?')) {
+		var deleteStr = '';
+		var chkb = document.getElementsByName('chkBoardNum');
+		chkb.forEach((chkbox) => {
+			if (chkbox.checked) deleteStr += chkbox.value + ','
+		});
+		
+		if (deleteStr == '') {
+			alert('삭제할 글을 선택 하세요.');
+		} else {
+			deleteStr = deleteStr.substr(0, deleteStr.length - 1);
+			window.location.href = 'boardDeleteChkbox.do?board_code=' + board_code + '&bnumStr=' + deleteStr;
+		}
+	} else {
+        event.preventDefault();
+        return false;
+    }
+	
+}); */
+   
+   
 </script>
 </body>
 </html>

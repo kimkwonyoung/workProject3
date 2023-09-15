@@ -10,15 +10,15 @@
 </head>
 <body>
     <div id="userForm">
-    <c:if test="${chkMem eq 'findid' }">
+    <c:if test="${search.type1 eq 'findid' }">
     	<h2>아이디 찾기</h2>
     </c:if>
-    <c:if test="${chkMem eq 'findpwd' }">
+    <c:if test="${search.type1 eq 'findpwd' }">
     	<h2>비밀번호 찾기</h2>
     </c:if>
         
-        <form action="memberSearch.do" method="post">
-         <c:if test="${chkMem eq 'findpwd' }">
+        <form action="<c:url value='/member/memberSearch.do'/>" method="post">
+         <c:if test="${search.type1 eq 'findpwd' }">
             <div class="form-group-insert">
                 <label for="userid">아이디:</label>
                 <input type="text" id="userid" name="memberid" placeholder="아이디를 입력하세요" required>
@@ -28,19 +28,19 @@
                 <label for="username">이름:</label>
                 <input type="text" id="username" name="name" placeholder="이름을 입력하세요" required>
             </div>
-            <c:if test="${chkMem eq 'findid' }">
+            <c:if test="${search.type1 eq 'findid' }">
 	            <div class="form-group-insert">
 	                <label for="userid">휴대폰번호:</label>
 	                <input type="text" id="tel" name="phone" placeholder="휴대폰번호를 입력하세요" required>
 	            </div>
          	</c:if>
             <div class="form-group-insert">
-            	<c:if test="${chkMem eq 'findid' }">
-            		<input type="hidden" name="chkMem" value="findid">
+            	<c:if test="${search.type1 eq 'findid' }">
+            		<input type="hidden" name="type1" value="findid">
                 	<input type="submit" value="아이디 찾기">
                 </c:if>
-                <c:if test="${chkMem eq 'findpwd' }">
-                	<input type="hidden" name="chkMem" value="findpwd">
+                <c:if test="${search.type1 eq 'findpwd' }">
+                	<input type="hidden" name="type1" value="findpwd">
                 	<input type="submit" value="비밀번호 찾기">
                 </c:if>
             </div>
