@@ -59,7 +59,7 @@ public class BoardServiceImpl extends BaseServiceImpl {
 	}
 	
 	//공지사항 게시판 새로 추가된 글 가져오기
-	public NoticeVO noticeNewOne(NoticeVO notice) throws JSONException, Exception {
+	public NoticeVO noticeNewOne(NoticeVO notice) throws Exception {
 		return (NoticeVO) getDAO().selectOne("notice.selectNewOneRow", notice);
 	}
 	
@@ -74,11 +74,24 @@ public class BoardServiceImpl extends BaseServiceImpl {
 		getDAO().update("notice.updateNotice", notice);
 	}
 	
+	//공지사항 조회수 증가
+	public boolean updateNoticeViewcount(NoticeVO notice) {
+		return 0 != getDAO().update("notice.updateViewcount", notice);
+	}
+	
 	//공지사항 게시판 글 체크한 것 삭제
 	public void deleteChkbox(BoardSearchVO search) {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("numlist", search.getScNoticeChkNum());
 		getDAO().delete("notice.deleteNotice", params);
+		
+	}
+	
+	//일반 게시판 관리자가 글 체크한 것 삭제
+	public void deleteBoardchkbox(BoardSearchVO search) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("numlist", search.getScBoardChkNum());
+		getDAO().delete("board.deleteBoardchkbox", params);
 		
 	}
 	
@@ -89,8 +102,8 @@ public class BoardServiceImpl extends BaseServiceImpl {
 		return (List<NoticeVO>) getDAO().selectList("notice.selectAddNumList", search);
 	}
 	
-	//일반 게시판 전체 목록(jqgrid)
-	public Map<String, Object> boardList3(BoardSearchVO search) throws Exception {
+	//일반 게시판 전체 목록
+	public Map<String, Object> boardList(BoardSearchVO search) throws Exception {
 		Map<String, Object> map = new HashMap<>();
 		
 		map.put("list",  (List<BoardVO>) getDAO().selectBySearch("board.selectBoardList", search, "totalCount"));
@@ -99,6 +112,46 @@ public class BoardServiceImpl extends BaseServiceImpl {
 		return map;
 	}
 	
+	//일반 게시판 한건 가져 오기
+	public BoardVO boardOne(BoardVO board) {
+		return (BoardVO) getDAO().selectOne("board.selectOneRow", board);
+	}
+	
+	//일반 게시판 조회수 증가
+	public boolean updateViewcount(BoardVO board) {
+		//log.info(">>>>>>>>>>" + getDAO().update("board.updateViewcount", board));
+		return 0 != getDAO().update("board.updateViewcount", board);
+	}
+	
+	//일반 게시판 글 수정
+	public boolean updateBoard(BoardVO board) {
+		return 0 != getDAO().update("board.updateBoard", board);
+	}
+	
+	//일반 게시판 글 쓰기
+	public boolean insertBoard(BoardVO board) {
+		return 0 != getDAO().insert("board.insertBoard", board);
+	}
+	
+	//일반 게시판 답글 쓰기
+	public boolean insertBoardReply(BoardVO board) {
+		return 0 != getDAO().insert("board.insertBoardReply", board);
+	}
+	
+	//일반 게시판 새로 추가된 글 가져오기
+	public BoardVO boardNewOne(BoardVO board) throws Exception {
+		return (BoardVO) getDAO().selectOne("board.selectNewOneRow", board);
+	}
+	
+//	//일반 게시판 마지막 밑에 글 가져오기
+//	public BoardVO boardLastRow(BoardSearchVO search) throws Exception {
+//		return (BoardVO) getDAO().selectOne("board.selectLastrow", search);
+//	}
+	
+	//일반 게시판 글 삭제
+	public boolean deleteBoard(BoardSearchVO search) {
+		return 0 != getDAO().delete("board.deleteBoard", search);
+	}
 	
 	/*
 	//아이디를 Key로 게시판 글 가져오기

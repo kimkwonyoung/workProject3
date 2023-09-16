@@ -238,7 +238,7 @@ function openUpdate(noticenum) {
 		data: JSON.stringify(param),
 		dataType: "json",
 		success: (json) => {
-	       	const notice = json.noticeInfo;
+	       	const notice = json.info;
 	   		$("#updateTitle").val(notice.title);
 	   		$("#updateContent").html(notice.content);
 	   		if (notice.fixedYn === "Y") {
@@ -293,7 +293,7 @@ function info(noticenum) {
 		data: JSON.stringify(param),
 		dataType: "json",
 		success: (json) => {
-	       	const info = json.noticeInfo;
+	       	const info = json.info;
 	       		  
 	    	$("#infoNoticenum").val(info.noticeNum);
 	     	$("#author").text(info.memId);

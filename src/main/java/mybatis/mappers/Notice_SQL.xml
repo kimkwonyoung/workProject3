@@ -113,7 +113,13 @@
 	</select>
 	
 	
-
+	
+	<update id="updateViewcount" parameterType="noticeVO">
+		update notice 
+		set 
+		view_count = view_count + 1 
+		where notice_num = #{noticeNum}
+	</update>
 
 	
 	<update id="updateNotice" parameterType="noticeVO">
@@ -131,7 +137,7 @@
 			)
 	</insert>
 	
-	<delete id="deleteNotice" >
+	<delete id="deleteNotice" parameterType="search">
 		delete from notice 
 		where notice_num in
 		<foreach item="noticenum" collection="numlist"  open="("  separator="," close=")"> 

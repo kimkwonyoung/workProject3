@@ -80,7 +80,7 @@ public class AdminController extends PrtController {
 		return "admin/notice_list";
 	}
 	
-	//공지사항 수정 (수정된 데이터 처리 로직 JSP 중단 상태)
+	//공지사항 수정
 	@ResponseBody
 	@RequestMapping(value = "/noticeUpdate.do", method = RequestMethod.POST)
 	public Map<String, NoticeVO> noticeUpdate(@RequestBody NoticeVO notice) throws Exception {
@@ -118,10 +118,11 @@ public class AdminController extends PrtController {
 	//공지사항 글 상세보기
 	@ResponseBody
 	@RequestMapping(value = "/noticeInfo.do", method = RequestMethod.POST)
-	public Map<String, NoticeVO> noticeInfo(@RequestBody NoticeVO notice) throws Exception {
-		Map<String, NoticeVO> map = new HashMap<String, NoticeVO>();
+	public Map<String, Object> noticeInfo(@RequestBody NoticeVO notice) throws Exception {
+		Map<String, Object> map = new HashMap<>();
 		
-		map.put("noticeInfo", _boardService.noticeOne(notice));
+		map.put("status", _boardService.updateNoticeViewcount(notice));
+		map.put("info", _boardService.noticeOne(notice));
 		
 		return map;
 	}

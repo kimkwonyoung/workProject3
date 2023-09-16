@@ -63,6 +63,106 @@
 		order SIBLINGS by board_num desc
 		<include refid="paging.bottom" />
 	</select>
+	
+	<select id="selectOneRow" parameterType="boardVO" resultType="boardVO">
+		select
+		<include refid="select" />
+		from board
+		where board_num = #{boardNum}
+	</select>
+	
+	<select id="selectNewOneRow" resultType="boardVO">
+		select
+			<include refid="select" />
+		from (
+				select * 
+				from board
+				start with pid=0
+        		CONNECT BY PRIOR board_num = pid
+        		order SIBLINGS by board_num desc
+			)
+		where rownum = 1
+	</select>
+	
+	<select id="selectLastrow" parameterType="search" resultType="boardVO">
+		select
+			<include refid="select" />
+		from (
+			select * 
+			from board
+			start with pid=0
+        	CONNECT BY PRIOR board_num = pid
+        	order SIBLINGS by board_num desc
+			)
+	<![CDATA[
+ 		where rownum = 1
+ 	]]>  
+	</select>
+	
+	<update id="updateViewcount" parameterType="boardVO">
+		update board 
+		set 
+		view_count = view_count + 1 
+		where board_num = #{boardNum}
+	</update>
+	
+	<update id="updateBoard" parameterType="boardVO">
+		update board 
+		set title = #{title}, content = #{content}, mod_date = SYSTIMESTAMP
+		where board_num = #{boardNum}
+	</update>
+	
+	<insert id="insertBoard" parameterType="boardVO">
+		insert into board(
+			board_num, mem_id, title, content
+		) 
+		values(
+			board_num.nextval, #{memId}, #{title}, #{content}
+		)
+	</insert>
+	
+	<insert id="insertBoardReply" parameterType="boardVO">
+		<selectKey keyProperty="boardNum" resultType="int"  order="BEFORE">
+			select 
+				board_num.nextval boardNum 
+			from dual
+		</selectKey>
+		INSERT INTO board (
+			  pid
+			, board_num
+			, title
+			, content
+			, mem_id
+		) VALUES (
+		      #{pid} 
+			, #{boardNum}
+			, #{title}
+			, #{content}
+			, #{memId}
+		)
+	</insert>
+	
+	<delete id="deleteBoard" parameterType="search">
+	 	
+		delete from board
+		where board_num = #{scBoardNum} or pid = #{scBoardNum}
+	
+	</delete>
+	
+
+	
+	<delete id="deleteBoardchkbox" parameterType="search" >
+		delete from board 
+		where board_num in
+		<foreach item="boardnum" collection="numlist"  open="("  separator="," close=")"> 
+			#{boardnum}		
+		</foreach>
+		or
+		pid in 
+		<foreach item="boardnum" collection="numlist"  open="("  separator="," close=")"> 
+			#{boardnum}		
+		</foreach>
+	</delete>
 
 	
 </mapper>

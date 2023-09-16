@@ -16,18 +16,23 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kosa.work.controller.PrtController;
 import com.kosa.work.service.impl.BoardServiceImpl;
 import com.kosa.work.service.model.BoardVO;
+import com.kosa.work.service.model.NoticeVO;
 import com.kosa.work.service.model.search.BoardSearchVO;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**게시판 컨트롤러
  * @author kky
  * 
  *
  */
+@Slf4j
 @Controller
 @RequestMapping("/board")
 public class BoardController extends PrtController {
@@ -53,12 +58,96 @@ public class BoardController extends PrtController {
 		if (search.getScRecodeCount() > 0)
 			search.setRecordCount(search.getScRecodeCount());
 		
-		model.addAttribute("result", _boardService.noticeList(search));
+		model.addAttribute("result", _boardService.boardList(search));
 		model.addAttribute("search", search);
 		
 		return "board/board_list";
 	}
 	
+	//일반 게시판 글 상세 보기
+	@ResponseBody
+	@RequestMapping(value = "/boardInfo.do", method = RequestMethod.POST)
+	public Map<String, Object> boardInfo(@RequestBody BoardVO board) throws Exception {
+		Map<String, Object> map = new HashMap<>();
+		//log.info(">>>>>>>boolean" + _boardService.updateViewcount(board));
+		map.put("status", _boardService.updateViewcount(board));
+		map.put("info", _boardService.boardOne(board));
+		
+		return map;
+	}
+	
+	//일반 게시판 글 수정 하기
+	@ResponseBody
+	@RequestMapping(value = "/boardUpdate.do", method = RequestMethod.POST)
+	public Map<String, Object> boardUpdate(@RequestBody BoardVO board) throws Exception {
+		Map<String, Object> map = new HashMap<>();
+		//_boardService.update(board);
+		
+		map.put("status", _boardService.updateBoard(board));
+		map.put("board", _boardService.boardOne(board));
+		
+		return map;
+	}
+	
+	//일반 게시판 글 쓰기
+	@ResponseBody
+	@RequestMapping(value = "/boardWrite.do", method = RequestMethod.POST)
+	public Map<String, Object> boardWrite(@RequestBody BoardVO board) throws Exception {
+		Map<String, Object> map = new HashMap<>();
+		
+		map.put("status", _boardService.insertBoard(board));
+		map.put("boardRow", _boardService.boardNewOne(board));
+		
+		return map;
+	}
+	
+	//일반 게시판 답글 등록
+	@ResponseBody
+	@RequestMapping(value = "/boardReply.do", method = RequestMethod.POST)
+	public Map<String, Object> boardReply(@RequestBody BoardVO board) throws Exception {
+		Map<String, Object> map = new HashMap<>();
+		map.put("status", _boardService.insertBoardReply(board));
+		
+		return map;
+	}
+	
+	//일반 게시판 글  삭제
+	@ResponseBody
+	@RequestMapping(value = "/boardDelete.do", method = RequestMethod.POST)
+	public Map<String, Object> boardDelete(@RequestBody BoardSearchVO search) throws Exception {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("status", _boardService.deleteBoard(search));
+		return map;
+	}
+	
+	//관리자가 일반 게시판 글 체크 박스로 삭제
+	@ResponseBody
+	@RequestMapping(value = "/boardDeletechkbox.do", method = RequestMethod.POST)
+	public Map<String, Object> noticeDeleteChk(@RequestBody BoardSearchVO search) throws Exception {
+		Map<String, Object> map = new HashMap<String, Object>();
+		_boardService.deleteBoardchkbox(search);
+		return map;
+		
+	}
+	
+//	public List<Member> getMemberList2(Member member) {
+//	      Map<String, Object> map = new HashMap<>();
+//	      map.put("searchTitle",member.getSearchTitle());
+//	      map.put("startNo", member.getEndNo()-member.getDeleteCount()+1);
+//	      map.put("endNo", member.getEndNo());
+//	      sqlSession.selectList("mapper.member.getMemberList2",map);
+//	      List<Member> list = (List<Member>)map.get("v_cursor");
+//	      
+//	      select rownum nrow, a.* 
+//	         from(
+//	            select memberid, name ,pwd, age, phone, address, gender ,email
+//	            from member
+//	            order by memberid
+//	             ) a
+//	             where rownum <= p_endNo
+//	        ) b
+//	     where nrow between p_startNo and  p_endNo
+//	      return list;
 	
 	
 	/*	
@@ -108,79 +197,9 @@ public class BoardController extends PrtController {
 		return jsonResult.toString();
 	}
 	
-	//게시판 글 작성
-	public String boardInsert(BoardVO board, HttpServletRequest request, HttpServletResponse response) throws Exception {
-		
-		_boardService.insert(board);
-		
-		request.setAttribute("board_code", board.getBoard_code());
-		request.setAttribute("result", _boardService.selectByBoardList(board));
-		
-		String url = "";
-		if (board.getBoard_code() == 10) { // 일반 게시판
-			url = "board/board_list.jsp";
-		} else if (board.getBoard_code() == 20) { // 공지사항 게시판
-			url = "board/notice_list.jsp";
-		}
-		return url;
-	}
-	
-	//게시판 글 업데이트
-	public String boardUpdate(BoardVO board, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-						
-		_boardService.update(board);
-		request.setAttribute("board_code", board.getBoard_code());
-		request.setAttribute("infoBoard", _boardService.selectKeyNum(board.getBoard_num()));
-		request.setAttribute("board_comment", _boardService.selectCommentList(board.getBoard_num()));
-		request.setAttribute("comment_count", _boardService.selectCommentCount(board.getBoard_num()));
-
-		return "board/board_info.jsp";
-		
-	}
-	
-	//게시판 글 삭제
-	public String boardDelete(BoardVO board, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		JSONObject jsonResult = _boardService.delete(board);
-		return jsonResult.toString();
-	}
-	
-	//게시판 체크한 글 삭제
-	public String boardDeleteChkbox(BoardVO board, HttpServletRequest request, HttpServletResponse response) throws Exception {
-		search.setsBNumStr(request.getParameter("bnumStr"));
-		System.out.println("넘어온 글번호 값 : " + request.getParameter("bnumStr"));
-		
-		_boardService.deleteChkbox(search);
-		
-		request.setAttribute("board_code", board.getBoard_code());
-		request.setAttribute("result", _boardService.selectByBoardList(board));
-		
-		String url = "";
-		if (board.getBoard_code() == 10) { // 일반 게시판
-			url = "board/board_list.jsp";
-		} else if (board.getBoard_code() == 20) { // 공지사항 게시판
-			url = "board/notice_list.jsp";
-		}
-		return url;
-	}
-	
 
 	
-	//일반게시판 목록
-	public String boardList(BoardVO board, HttpServletRequest request, HttpServletResponse response) throws Exception {
-		String url = "";
-		
-		request.setAttribute("board_code", board.getBoard_code());
-		request.setAttribute("result", _boardService.selectByBoardList(board));
-		
-		if (board.getBoard_code() == 10) { // 일반 게시판
-			url = "board/board_list.jsp";
-		} else if (board.getBoard_code() == 20) { // 공지사항 게시판
-			url = "board/notice_list.jsp";
-		}
-		return url;
-	}
-	
+
 	public String ajaxDeleteChkOne(BoardVO board, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		
 		JSONObject jsonResult = _boardService.deleteAjax(board);
@@ -196,33 +215,7 @@ public class BoardController extends PrtController {
 		
 	}
 	
-	//게시판 글 정보
-	public String boardInfo(BoardVO board, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		request.setAttribute("board_code", board.getBoard_code());
-		request.setAttribute("infoBoard", _boardService.selectByBoardNum(board.getBoard_num()));
-		request.setAttribute("board_comment", _boardService.selectCommentList(board.getBoard_num()));
-		request.setAttribute("comment_count", _boardService.selectCommentCount(board.getBoard_num()));
-		
-		return "board/board_info.jsp";
-	}
-	
-	//게시판 글 수정 페이지 이동(글쓰기 공통)
-	public String boardUpdateInfo(BoardVO board, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		request.setAttribute("chk", CommonProperty.getUpdate());
-		request.setAttribute("infoBoard", _boardService.selectKeyNum(board.getBoard_num()));
-		
-		return "board/board_write.jsp";
-	}
-	
-	//게시판 글 쓰기 페이지 이동(글쓰기 공통)
-	public String boardWrite(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		request.setAttribute("chk", CommonProperty.getWrite());
 
-		return "board/board_write.jsp";
-	}
-	
 	//댓글 작성
 	public String commentInsert(CommentVO comment, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		search.setsBoard_num(request.getParameter("board_num"));
@@ -267,13 +260,13 @@ public class BoardController extends PrtController {
 	
 	
 	//jqGrid 테스트
-	@ResponseBody
-	@RequestMapping(value = "/boardList3.do")
-	public Map<String, List<BoardVO>> boardList3(@RequestBody BoardSearchVO search, Model model) throws Exception {
-		Map<String, List<BoardVO>> map = new HashMap<>();
-		
-		map.put("boardList", (List<BoardVO>) _boardService.boardList3(search));
-		
-		return map;
-	}
+//	@ResponseBody
+//	@RequestMapping(value = "/boardList3.do")
+//	public Map<String, List<BoardVO>> boardList3(@RequestBody BoardSearchVO search, Model model) throws Exception {
+//		Map<String, List<BoardVO>> map = new HashMap<>();
+//		
+//		map.put("boardList", (List<BoardVO>) _boardService.boardList3(search));
+//		
+//		return map;
+//	}
 }
