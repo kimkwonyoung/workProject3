@@ -102,6 +102,11 @@
 
       <label for="content">내용:</label><br>
       <textarea id="writeContent" name="content" rows="10" class="form-input"></textarea><br>
+    <input type="button"  value="파일추가" onClick="fn_addFile()"/><br>
+	<div id="d_file">
+		<input  type='file' name='file' />
+	</div>
+	<input type="button" id="uploadButton" value="업로드"/>
 </div>
 
 <!-- 게시판 글 수정하기  -->
@@ -734,6 +739,32 @@ $("#del").on("click", (event) => {
         event.preventDefault();
         return false;
     }
+});
+
+function fn_addFile(){
+	$("#d_file").append("<br>"+"<input  type='file' name='file' />");
+}
+
+//파일 업로드
+document.querySelector("#uploadButton").addEventListener("click", e => {
+	const mForm = document.querySelector("#mForm");
+	const formData = new FormData(mForm);
+
+ 	console.log(formData);
+    const option = {
+        method : 'POST',
+        body: formData
+    };
+
+    fetch("<c:url value='/board/uploadFile.do'/>", option)
+    .then(response => response.json())
+    .then(json => {
+    	if (json.status) {
+    		alert("성공");
+    	} else {
+    		alert("실패");
+    	}
+    });
 });
 
    

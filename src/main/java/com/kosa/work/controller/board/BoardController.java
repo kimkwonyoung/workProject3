@@ -18,12 +18,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.kosa.work.controller.PrtController;
 import com.kosa.work.service.impl.BoardServiceImpl;
 import com.kosa.work.service.model.BoardVO;
 import com.kosa.work.service.model.CommentVO;
 import com.kosa.work.service.model.NoticeVO;
+import com.kosa.work.service.model.common.AttacheFileVO;
 import com.kosa.work.service.model.search.BoardSearchVO;
 
 import lombok.extern.slf4j.Slf4j;
@@ -182,6 +184,26 @@ public class BoardController extends PrtController {
 		map.put("commentCount", _boardService.commentCount(comment.getBoardNum()));
 		return map;
 		
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/uploadFile.do", method = RequestMethod.POST) 
+	public Map<String, Object> uploadFile(AttacheFileVO uploadDTD) {
+		Map<String, Object> result = new HashMap();
+		result.put("status", false);
+		
+		if (uploadDTD.getFile() != null) {
+			for (MultipartFile file : uploadDTD.getFile()) { 
+				System.out.println("contentType = " + file.getContentType());
+				System.out.println("size = " + file.getSize());
+				System.out.println("name = " + file.getName());
+				System.out.println("originalFilename = " + file.getOriginalFilename());
+				
+				//해당 위치에서 첨부 파일을 저장하면됨 
+			}
+		}
+		result.put("status", true);
+		return result;
 	}
 	
 	
