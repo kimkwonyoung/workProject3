@@ -35,7 +35,7 @@
         <div id="notice" class="tabContent">
           <ul>
           <c:forEach var="notice" items="${noticeList }">           
-            <li><a href="">${notice.title }</a></li>
+            <li><a href="<c:url value='/board/noticeList.do'/>">${notice.title }</a></li>
           </c:forEach> 
           </ul>
         </div>
@@ -52,7 +52,11 @@
         <div id="board" class="tabContent">
           <ul>            
             <c:forEach var="nomal" items="${nomalList }">           
-            <li><a href="">${nomal.title }</a></li>
+            <li>
+          		<span style="padding-left:${(nomal.level-1) * 20}px"></span>
+          		${nomal.level != 1 ? "[답변] " : ""}
+          		<a href="<c:url value='/board/boardList.do'/>">${nomal.title }</a>
+            </li>
           </c:forEach> 
           </ul>
         </div>

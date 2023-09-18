@@ -122,11 +122,53 @@
       <div class="post-content" id="post-content">
       </div>
     </div>
+
+<div class="comment-form" >
+    <h3 id="comment-count"></h3>
+    <div class="comment-form" id="comment-tmpl">
+    </div>
+</div>
+
+    <div id="comment" style="display:none">
+    	 <h3 id="comment-memid"></h3>
+	    <div class="comment-form">
+        <form id="commentForm" >
+        	<textarea id="write-detail" name="detail" rows="4" cols="50" placeholder="댓글 내용"></textarea>
+        	<a class="write-comment" href="#">댓글 작성</a>
+   	 	</form>
+	    </div>
+	    
+    </div>
+    	<div style="text-align: center; margin-top:10px">
+    	<input type="button" id="moreBtn" value="더보기" />
+    </div>
+
+    
 </div>
 
 <c:set var="loginmem" value="${loginMember }" />
 <c:set var="loginmemid" value="${loginMember.memberid }" />
 
+<script id="commentTemplate" type="text/x-jsrender">
+<div class="comment-list">
+	<h5>{{:memId }}</h5>
+	<div class = "comment-area">
+		<div class="commentdetail">
+			<span class="comment-content">{{:detail }}</span>
+		</div>
+		<div class="up-del-link">
+			<h5 class="comment-date">{{:regDate}}</h5>
+			<a href="#" class="edit-comment-link" style="margin-right:10px" data-mem-id="{{:memId }}" data-comment-id="{{:commentNum}}" >수정</a>
+			<a href="#" class="delete-comment">삭제</a>
+		</div>
+	</div>
+	<div class="edit-comment-form" style="display:none;">
+		<textarea class="edit-comment-textarea" rows="4" cols="50">{{:detail}}</textarea>
+		<a href="#" class="save-edited-comment" data-num-id="{{:commentNum}}">저장</a>
+		<a href="#" class="cancel-edit-comment">취소</a>
+	</div>
+</div>
+</script>
 
 <script id="boardTemplate" type="text/x-jsrender">
 	<tr>
@@ -141,9 +183,130 @@
 </script>
 	
 <script>
+function showLink() {
+	const loginmemid = "${loginmemid}";
+	$(".edit-comment-link").each((index, link) => {
+    	const memid = $(link).attr('data-mem-id');
+        if (loginmemid === memid) {
+        	$(link).css("display", "block");
+            $(".delete-comment").eq(index).css("display", "block");
+       }
+   });
+}
+
 $(document).ready(function() {
 	const loginmem = "${loginmem}";
 	const loginmemid = "${loginmemid}";
+	//수정 하기 버튼 클릭 저장,취소 버튼 활성화
+    $(document).on("click", ".edit-comment-link", function() {
+        const index = $(".edit-comment-link").index(this);
+        $(".edit-comment-form").eq(index).css("display", "block");
+        $(".comment-content").eq(index).css("display", "none");
+        $(".comment-area").eq(index).css("display", "none");
+    });
+	
+	//취소 버튼 클릭, 수정 삭제 버튼 활성화
+    $(document).on("click", ".cancel-edit-comment", function() {
+        const index = $(".cancel-edit-comment").index(this);
+        $(".edit-comment-form").eq(index).css("display", "none");
+        $(".comment-content").eq(index).css("display", "block");
+        $(".comment-area").eq(index).css("display", "block");
+    });
+	
+	//댓글 삭제하기
+	$(document).on("click", ".delete-comment", function() {
+		if (confirm('정말로 삭제 하시겠습니까?')) {
+			const index = $(".delete-comment").index(this);
+			const delLink = $(this).closest(".up-del-link");
+			commentNum = $(delLink).find(".edit-comment-link").data("comment-id");
+			console.log("코멘트번호 = " + commentNum);
+			
+			const param = {
+					boardNum: $("#infoboardnum").val(),
+					commentNum: commentNum
+			};
+			
+			$.ajax({
+				url: "<c:url value='/board/commentDelete.do'/>",
+				type: "POST",
+				contentType: "application/json; charset=UTF-8",
+				data: JSON.stringify(param),
+				dataType: "json",
+				success: (json) => {
+					if (json.status) {
+						$(".comment-list").eq(index).css("display", "none");
+						$("#comment-count").text("댓글(" + json.commentCount + ")");
+					}
+					
+				}
+			});
+		}
+	});
+	
+	//댓글 작성하기
+	$(document).on("click", ".write-comment", function() {
+		const param = {
+	     		boardNum: $("#infoboardnum").val(),
+				detail: $("#write-detail").val(),
+				memId: loginmemid
+		 };
+		
+	     $.ajax({
+				url: "<c:url value='/board/commentWrite.do'/>",
+				type: "POST",
+				contentType: "application/json; charset=UTF-8",
+				data: JSON.stringify(param),
+				dataType: "json",
+				success: (json) => {
+					if (json.status) {
+						const commentData = json.comment;
+				     	const commentTemplate = $("#commentTemplate").html();
+						const tmpl = $.templates(commentTemplate);
+						const renderedcomment = tmpl.render(commentData);
+						  
+						const commentListHTML = $("#comment-tmpl");
+						commentListHTML.empty();
+						$(commentListHTML).append(renderedcomment);
+						$("#comment-count").text("댓글(" + json.commentCount + ")");
+						showLink();
+						
+						$("#write-detail").val("");
+					}
+				}
+			});
+	});
+	
+	//수정된 댓글 저장하기
+	$(document).on("click", ".save-edited-comment", function() {
+		const index = $(".save-edited-comment").index(this);
+		const editForm = $(this).closest(".edit-comment-form");
+	    
+	    const commentNum = $(editForm).find(".save-edited-comment").data("num-id");
+	    const detail = $(editForm).find(".edit-comment-textarea").val();
+		
+		const param = {
+	     		commentNum: commentNum,
+				detail: detail 
+		 };
+	     $.ajax({
+				url: "<c:url value='/board/commentUpdate.do'/>",
+				type: "POST",
+				contentType: "application/json; charset=UTF-8",
+				data: JSON.stringify(param),
+				dataType: "json",
+				success: (json) => {
+					if (json.status) {
+						$(".comment-content").eq(index).text(json.comment.detail);
+						$(".comment-date").eq(index).text(json.comment.regDate);
+						
+						$(".edit-comment-form").eq(index).css("display", "none");
+				        $(".comment-content").eq(index).css("display", "block");
+				        $(".comment-area").eq(index).css("display", "block");
+					}
+				}
+			});
+	});
+
 	if (loginmem != "") {
         $("#wr").css("display", "inline-block");
     }
@@ -153,8 +316,6 @@ $(document).ready(function() {
 		$(".checkbox-all").css("display", "none");
 		$(".checkbox-cell").css("display", "none");
 	}
-	
-	
    $("#dialogInfo").dialog({
         autoOpen: false,
         modal: true,
@@ -196,15 +357,22 @@ $(document).ready(function() {
           		 const type = $("#dialogInfo").data("type");
           		 const reply = "reply";
           			if (type === "board") {
-              			const boardnum = $("#infoboardnum").val();
-              			//답글 쓰기
-          				openReply(boardnum, reply);
+          				if (loginmem != "") {
+          					const boardnum = $("#infoboardnum").val();
+                  			//답글 쓰기
+              				openReply(boardnum, reply);
+          				} else {
+          					alert("로그인 해주세요");
+          				}
+              			
           			} else if (type === "notice") {
           				alert("공지사항 글은 답글 불가능");
           			}
           		},
             "Close": function() {
+            	$(".comment-list").css("display", "none");
                 $(this).dialog("close");
+                
             }
     		
         }
@@ -248,6 +416,8 @@ $(document).ready(function() {
         }
     });
 });
+
+
 
 function openReply(boardnum, reply) {
 	$("#dialogWrite")
@@ -391,10 +561,16 @@ function addReply(boardnum) {
 }
 
 function info(boardnum, type) {
+	const loginmemid = "${loginmemid}";
+	if (loginmemid != "") {
+		$("#comment").css("display", "inline-block");
+	}
+	
 	var link;
 	var param;
 	if (type === "notice") {
 		link = "<c:url value='/admin/noticeInfo.do'/>";
+		
 		param = {
 		        noticeNum: boardnum,
 		};
@@ -419,23 +595,41 @@ function info(boardnum, type) {
 			}
 			const info = json.info;
 			
+			
 			if (type === "notice") {
 				$("#infoboardnum").val(info.noticeNum);
 			} else if (type === "board") {
 				$("#infoboardnum").val(info.boardNum);
 			}
-	    	
+			$("#comment-count").text("댓글(" + json.commentCount + ")");
+			$("#comment-memid").text(loginmemid);
+			
 	    	$("#infoboardmemid").val(info.memId);
 	     	$("#author").text(info.memId);
 	     	$("#date").text(info.modDate);
 	     	$("#views").text(info.viewCount);
 	     	$("#post-content").html(info.content);
 	     	$("#dialogInfo").dialog("option", "title", info.title);
+	     	
+	     	const commentData = json.comment;
+	     	const commentTemplate = $("#commentTemplate").html();
+			const tmpl = $.templates(commentTemplate);
+			//const renderedcomment = tmpl.render({comments: commentData});
+			const renderedcomment = tmpl.render(commentData);
+			  
+			const commentListHTML = $("#comment-tmpl");
+			commentListHTML.empty();
+			$(commentListHTML).append(renderedcomment);
+			
+			showLink();
 			
 		}
 	});
 	$("#dialogInfo").data("type", type).dialog("open");
 }
+
+
+
 
 
 $("#wr").on("click", () => {
@@ -456,8 +650,37 @@ $("#mForm").on("submit", () => {
 	return true;
 });
 
-
-
+//댓글 더보기
+$("#moreBtn").on("click", () => {
+	const loginmemid = "${loginmemid}";
+	const lastComment = $("#comment-tmpl").find(".comment-list").last();
+    const commentNum = lastComment.find(".edit-comment-link").data("comment-id");
+	const param = {
+			boardNum: $("#infoboardnum").val(),
+			commentNum: commentNum
+	      };
+	
+	$.ajax({
+		url: "<c:url value='/board/commentAdd.do'/>",
+		type: "POST",
+		contentType: "application/json; charset=UTF-8",
+		data: JSON.stringify(param),
+		dataType: "json",
+		success: (json) => {
+			
+	     	const commentData = json.comment;
+	     	const commentTemplate = $("#commentTemplate").html();
+			const tmpl = $.templates(commentTemplate);
+			//const renderedcomment = tmpl.render({comments: commentData});
+			const renderedcomment = tmpl.render(commentData);
+			  
+			const commentListHTML = $("#comment-tmpl");
+			$(commentListHTML).append(renderedcomment);
+			
+			showLink();
+		}
+	});
+});
 
 //체크 박스 전체 선택
 $("#checkAll").on("click", () => {

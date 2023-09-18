@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.kosa.work.controller.PrtController;
 import com.kosa.work.service.impl.BoardServiceImpl;
 import com.kosa.work.service.model.BoardVO;
+import com.kosa.work.service.model.CommentVO;
 import com.kosa.work.service.model.NoticeVO;
 import com.kosa.work.service.model.search.BoardSearchVO;
 
@@ -70,8 +71,14 @@ public class BoardController extends PrtController {
 	public Map<String, Object> boardInfo(@RequestBody BoardVO board) throws Exception {
 		Map<String, Object> map = new HashMap<>();
 		//log.info(">>>>>>>boolean" + _boardService.updateViewcount(board));
+		
+		CommentVO comment = new CommentVO();
+		comment.setBoardNum(board.getBoardNum());
+		
 		map.put("status", _boardService.updateViewcount(board));
 		map.put("info", _boardService.boardOne(board));
+		map.put("comment", _boardService.commentList(comment));
+		map.put("commentCount", _boardService.commentCount(board.getBoardNum()));
 		
 		return map;
 	}
@@ -130,6 +137,55 @@ public class BoardController extends PrtController {
 		
 	}
 	
+	//댓글 더보기 추가 
+	@ResponseBody
+	@RequestMapping(value = "/commentAdd.do", method = RequestMethod.POST)
+	public Map<String, Object> commentAdd(@RequestBody CommentVO comment) throws Exception {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("comment", _boardService.commentList(comment));
+		return map;
+		
+	}
+	
+	//댓글 수정하기
+	@ResponseBody
+	@RequestMapping(value = "/commentUpdate.do", method = RequestMethod.POST)
+	public Map<String, Object> commentUpdate(@RequestBody CommentVO comment) throws Exception {
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		map.put("status", _boardService.updateComment(comment));
+		map.put("comment", _boardService.commentOne(comment.getCommentNum()));
+		return map;
+		
+	}
+	
+	//댓글 작성하기
+	@ResponseBody
+	@RequestMapping(value = "/commentWrite.do", method = RequestMethod.POST)
+	public Map<String, Object> commentWrite(@RequestBody CommentVO comment) throws Exception {
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		map.put("status", _boardService.insertComment(comment));
+		map.put("comment", _boardService.commentAll(comment));
+		map.put("commentCount", _boardService.commentCount(comment.getBoardNum()));
+		return map;
+		
+	}
+	
+	//댓글 삭제하기
+	@ResponseBody
+	@RequestMapping(value = "/commentDelete.do", method = RequestMethod.POST)
+	public Map<String, Object> commentDelete(@RequestBody CommentVO comment) throws Exception {
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		map.put("status", _boardService.deleteComment(comment.getCommentNum()));
+		map.put("commentCount", _boardService.commentCount(comment.getBoardNum()));
+		return map;
+		
+	}
+	
+	
+	
 //	public List<Member> getMemberList2(Member member) {
 //	      Map<String, Object> map = new HashMap<>();
 //	      map.put("searchTitle",member.getSearchTitle());
@@ -149,114 +205,6 @@ public class BoardController extends PrtController {
 //	     where nrow between p_startNo and  p_endNo
 //	      return list;
 	
-	
-	/*	
-	public String boardList2(BoardVO board, HttpServletRequest request, HttpServletResponse response) throws Exception { 
-		request.setAttribute("boardList2", _boardService.selectByAddList(board));
-		return "board/board_list2.jsp";
-	}
-	public String boardAjaxList2(BoardVO board, HttpServletRequest request, HttpServletResponse response) throws Exception { 
-		JSONObject jsonResult = _boardService.selectByAjaxList(board);
-		return jsonResult.toString();
-	}
-	
-	public String ajaxDeleteChkOne2(BoardVO board, HttpServletRequest request, HttpServletResponse response) throws Exception {
-		JSONObject jsonResult = _boardService.deleteAjax2(board);
-		
-		return jsonResult.toString();
-	}
-	
-	public String ajaxDeleteChkAll2(BoardVO board, HttpServletRequest request, HttpServletResponse response) throws Exception {
-		JSONObject jsonResult = _boardService.deleteCheckBox2(board);
-		
-		return jsonResult.toString();
-	}
-	
-	public String ajaxInfo2(BoardVO board, HttpServletRequest request, HttpServletResponse response) throws Exception {
-		JSONObject jsonResult = new JSONObject();
-		List<BoardVO> boardList = new ArrayList<>();
-		boardList.add(_boardService.selectByBoardNum(board.getBoard_num()));		
-		
-		jsonResult.put("boardInfo", boardList);
-		
-		return jsonResult.toString();
-	}
-	
-	public String ajaxWrite2(BoardVO board, HttpServletRequest request, HttpServletResponse response) throws Exception {
-		_boardService.insert2(board);
-		JSONObject jsonResult = _boardService.selectByAjaxOneRow(board);
-		
-		return jsonResult.toString();
-	}
-	
-	public String ajaxUpdate2(BoardVO board, HttpServletRequest request, HttpServletResponse response) throws Exception {
-		_boardService.update(board);
-		JSONObject jsonResult = new JSONObject();
-		jsonResult.put("boardUpdate", _boardService.selectByBoardNum(board.getBoard_num()));	
-		
-		return jsonResult.toString();
-	}
-	
-
-	
-
-	public String ajaxDeleteChkOne(BoardVO board, HttpServletRequest request, HttpServletResponse response) throws Exception {
-		
-		JSONObject jsonResult = _boardService.deleteAjax(board);
-		
-		return jsonResult.toString();
-	}
-	
-	public String ajaxDeleteChkAll(BoardVO board, HttpServletRequest request, HttpServletResponse response) throws Exception {
-		
-		JSONObject jsonResult = _boardService.deleteCheckBox(board);
-		
-		return jsonResult.toString();
-		
-	}
-	
-
-	//댓글 작성
-	public String commentInsert(CommentVO comment, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		search.setsBoard_num(request.getParameter("board_num"));
-		search.setsBoard_code(request.getParameter("board_code"));
-		
-		_boardService.insert(comment);
-		
-		request.setAttribute("board_code", search.getsBoard_code());
-		request.setAttribute("infoBoard", _boardService.selectByBoardNum(comment.getBoard_num()));
-		request.setAttribute("board_comment", _boardService.selectCommentList(comment.getBoard_num()));
-		request.setAttribute("comment_count", _boardService.selectCommentCount(comment.getBoard_num()));
-		
-		return "board/board_info.jsp";
-	}
-//	public String commentInsert(Board_comment comment, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//		System.out.println("댓글 = " + comment);
-//		JSONObject jsonResult = _boardService.insert(comment);
-//		System.out.println(jsonResult.get("board_comment"));
-//		return jsonResult.toString();
-//	}
-	
-	//댓글 삭제 
-	public String commentDelete(CommentVO comment, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		search.setsBoard_code(request.getParameter("board_code"));
-		
-		_boardService.deleteComment(comment.getComment_num());
-
-		request.setAttribute("board_code", search.getsBoard_code());
-		request.setAttribute("infoBoard", _boardService.selectByBoardNum(comment.getBoard_num()));
-		request.setAttribute("board_comment", _boardService.selectCommentList(comment.getBoard_num()));
-		request.setAttribute("comment_count", _boardService.selectCommentCount(comment.getBoard_num()));
-
-		return "board/board_info.jsp";
-	}
-	
-	//게시판에 댓글 수정하기
-	public String boardUpdateComment(CommentVO board_comment, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		JSONObject jsonResult = _boardService.update(board_comment);
-		return jsonResult.toString();
-	}
-	*/
 	
 	
 	//jqGrid 테스트

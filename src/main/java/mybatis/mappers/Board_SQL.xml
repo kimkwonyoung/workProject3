@@ -39,10 +39,12 @@
 	
 	<select id="selectMainBoard" resultType="boardVO">
 		select
-		<include refid="select" /> 
+		level, <include refid="select" /> 
 		from  board
 		<![CDATA[ where rownum <= 5 ]]>
-		order by board_num desc
+		start with pid=0
+		CONNECT BY PRIOR board_num = pid
+		order SIBLINGS by board_num desc
 	</select>
 	
 	
@@ -98,6 +100,8 @@
  		where rownum = 1
  	]]>  
 	</select>
+	
+
 	
 	<update id="updateViewcount" parameterType="boardVO">
 		update board 

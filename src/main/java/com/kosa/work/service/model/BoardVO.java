@@ -30,6 +30,8 @@ public class BoardVO implements GeneralModel {
 	private int pid;
 	private int level;
 	
+	private int commentNum; // 임시
+	
 //	private int nrow;
 //	private int count;
 //	private int lastBnum;

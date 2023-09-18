@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+      PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="comment">
+	<sql id="select">
+		comment_num, mem_id, board_num, detail, reg_date
+	</sql>
+	
+	<select id="selectCommentcount" parameterType="int" resultType="int">
+		select count(*)
+		from board_comment
+		where board_num = #{boardNum}
+	</select>
+	
+	<select id="selectCommentNum" parameterType="int" resultType="commentVO">
+		select
+		<include refid="select" />
+		from board_comment
+		where comment_num = #{commentNum}
+	</select>
+	
+	<select id="selectCommentNew" parameterType="int" resultType="commentVO">
+	select
+	<include refid="select" /> 
+	from (
+			select * from 
+			board_comment
+			where board_num = #{boardNum}
+			order by comment_num desc
+		)
+	where rownum = 1
+	
+	</select>
+	
+	<select id="selectCommentlist" parameterType="commentVO" resultType="commentVO">
+		select
+		<include refid="select" />
+		from (
+			select *
+			from board_comment
+			where board_num = #{boardNum}
+			<if test="commentNum > 0">
+				<![CDATA[and comment_num > ]]> #{commentNum} 
+			</if>
+			order by comment_num asc
+		)
+		<![CDATA[where rownum <= 5]]>
+	
+	</select>
+	
+	<select id="selectCommentAll" parameterType="commentVO" resultType="commentVO">
+		select 
+		<include refid="select" />
+		from board_comment
+		where board_num = #{boardNum}
+		order by comment_num asc
+	</select>
+	
+	
+	
+	<update id="updateComment" parameterType="commentVO">
+		update board_comment
+		set
+		detail = #{detail}, reg_date = SYSTIMESTAMP
+		where comment_num = #{commentNum}
+	</update>
+	
+	<insert id="insertComment" parameterType="commentVO">
+		insert into board_comment
+		(
+			comment_num, mem_id, board_num, detail
+		)
+		values
+		(	
+			comment_seq.nextval, #{memId}, #{boardNum}, #{detail}
+		)
+	</insert>
+	
+	<delete id="deleteComment" parameterType="int">
+		delete from board_comment
+		where comment_num = #{commentNum}
+	
+	</delete>
+	
+</mapper>

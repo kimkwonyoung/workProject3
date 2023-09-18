@@ -45,9 +45,6 @@ public class AdminController extends PrtController {
 	@RequestMapping("/memberList.do")
 	public String memberList(MemberSearchVO search, BindingResult result, Model model) throws Exception {
 		super.setPageSubTitle("관리자 회원 목록", model);
-		if (result.hasErrors())
-			return super.setBindingResult(result, model);
-    
 		model.addAttribute("memberlist", _memberService.memberList(search));
 		
 		return "admin/member_list";

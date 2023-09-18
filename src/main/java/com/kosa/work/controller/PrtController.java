@@ -104,23 +104,23 @@ public class PrtController {
 	 * @param model
 	 * @return
 	 */
-	public String setBindingResult(BindingResult result, Model model) {
-		if (result.getAllErrors().size() > 0) {
-			StringBuffer sb = new StringBuffer();
-			for (Object e : result.getAllErrors()) {
-				sb.append(((ObjectError)e).getObjectName() + " - " + ((ObjectError)e).getDefaultMessage() + "<br />");
-			}
-			
-			Exception ex = new Exception("[BindingResult Exception] 올바르지 않은 파라미터 입력 : " + sb.toString());
-			//Exception ex = new Exception("[BindingResult Exception] 올바르지 않은 파라미터 입력");
-			
-			logger.error(ex.getMessage(), ex);
-			
-			model.addAttribute("exception", ex);
-		}
-		
-		return getConfig().getViewError();
-	}
+//	public String setBindingResult(BindingResult result, Model model) {
+//		if (result.getAllErrors().size() > 0) {
+//			StringBuffer sb = new StringBuffer();
+//			for (Object e : result.getAllErrors()) {
+//				sb.append(((ObjectError)e).getObjectName() + " - " + ((ObjectError)e).getDefaultMessage() + "<br />");
+//			}
+//			
+//			Exception ex = new Exception("[BindingResult Exception] 올바르지 않은 파라미터 입력 : " + sb.toString());
+//			//Exception ex = new Exception("[BindingResult Exception] 올바르지 않은 파라미터 입력");
+//			
+//			logger.error(ex.getMessage(), ex);
+//			
+//			model.addAttribute("exception", ex);
+//		}
+//		
+//		return getConfig().getViewError();
+//	}
 	
 	
 	/**

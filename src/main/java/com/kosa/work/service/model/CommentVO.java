@@ -15,10 +15,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CommentVO implements GeneralModel {
 	private static final long serialVersionUID = -9062464033624231460L;
-	private int comment_num;
-	private String mem_id;
-	private int board_num;
+	private int commentNum;
+	private String memId;
+	private int boardNum;
 	private String detail;
-	private String reg_date;
+	private String regDate;
 	
 }

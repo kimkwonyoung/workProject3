@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import com.kosa.work.controller.AdminController;
 import com.kosa.work.service.dao.GeneralDAOImpl;
 import com.kosa.work.service.model.BoardVO;
+import com.kosa.work.service.model.CommentVO;
 import com.kosa.work.service.model.NoticeVO;
 import com.kosa.work.service.model.common.SearchVO;
 import com.kosa.work.service.model.search.BoardSearchVO;
@@ -153,34 +154,49 @@ public class BoardServiceImpl extends BaseServiceImpl {
 		return 0 != getDAO().delete("board.deleteBoard", search);
 	}
 	
-	/*
-	//아이디를 Key로 게시판 글 가져오기
-	public List<BoardVO> selectByIdBoardList(SearchVO search) {
-		return _boardDao.selectByIdBoardList(QueryProperty.getQuery("board.selectId"), search.getsMemid());
+	//댓글 전체 리스트 가져오기 5건(글 한개에 대한)
+	public List<CommentVO> commentList(CommentVO comment) {
+		return (List<CommentVO>) getDAO().selectList("comment.selectCommentlist", comment);
 	}
-	
-	//게시판 번호를 Key로 게시판 글 가져오기 + 조회수 1증가 업데이트
-	public BoardVO selectByBoardNum(int board_num) {
-		int row = _boardDao.updateViewCount(QueryProperty.getQuery("board.updateView"), board_num);
-		Optional<BoardVO> optionalBoard =  _boardDao.selectByBoardNum(QueryProperty.getQuery("board.selectNum"), board_num);
-		if (row > 0) {
-			System.out.println("조회수 반영된 갯수 : " + row);
-		} else {
-			System.out.println("반영 X");
-		}
-		return optionalBoard.orElse(null);
-	}
-	
-	//게시판 번호를 Key로 게시판 글 가져오기
-	public BoardVO selectKeyNum(int board_num) {
-		Optional<BoardVO> optionalBoard =  _boardDao.selectByBoardNum(QueryProperty.getQuery("board.selectNum"), board_num);
-		return optionalBoard.orElse(null);
-	}
-	
 	//댓글 전체 리스트 가져오기(글 한개에 대한)
-	public List<CommentVO> selectCommentList(int board_num) {
-		return _boardDao.selectByCommentList(QueryProperty.getQuery("board.selectCommentList"), board_num);
+	public List<CommentVO> commentAll(CommentVO comment) {
+		return (List<CommentVO>) getDAO().selectList("comment.selectCommentAll", comment);
 	}
+	
+	//댓글 갯수
+	public int commentCount(int board_num) {
+		return (int) getDAO().selectOne("comment.selectCommentcount", board_num);
+	}
+	
+	//댓글 번호로 한건 가져오기
+	public CommentVO commentOne(int comment_num) {
+		return (CommentVO) getDAO().selectOne("comment.selectCommentNum", comment_num);
+	}
+	
+	//댓글 번호로 한건 가져오기
+	public CommentVO commentNew(int board_num) {
+		return (CommentVO) getDAO().selectOne("comment.selectCommentNew", board_num);
+	}
+	
+	//댓글 수정 하기
+	public boolean updateComment(CommentVO comment) {
+		return 0 != getDAO().update("comment.updateComment", comment);
+	}
+	
+	//댓글 작성 하기
+	public boolean insertComment(CommentVO comment) {
+		return 0 != getDAO().insert("comment.insertComment", comment);
+	}
+	
+	//댓글 작성 하기
+	public boolean deleteComment(int comment_num) {
+		return 0 != getDAO().delete("comment.deleteComment", comment_num);
+	}
+	
+	/*
+
+	
+	
 	
 	//댓글 카운트
 	public int selectCommentCount(int board_num) {

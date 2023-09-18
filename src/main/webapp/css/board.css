@@ -231,6 +231,7 @@ th input[type="checkbox"], td input[type="checkbox"] {
 	background-color: #f9f9f9;
 	border-radius: 5px;
 	height: 210px;
+	width:100%;
 }
 #comment h3 {
 	margin-left: 5px;
