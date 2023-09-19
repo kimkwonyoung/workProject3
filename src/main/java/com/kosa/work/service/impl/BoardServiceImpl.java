@@ -1,4 +1,5 @@
 package com.kosa.work.service.impl;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -19,6 +20,7 @@ import com.kosa.work.service.dao.GeneralDAOImpl;
 import com.kosa.work.service.model.BoardVO;
 import com.kosa.work.service.model.CommentVO;
 import com.kosa.work.service.model.NoticeVO;
+import com.kosa.work.service.model.common.AttacheFileVO;
 import com.kosa.work.service.model.common.SearchVO;
 import com.kosa.work.service.model.search.BoardSearchVO;
 import com.kosa.work.util.StringUtil;
@@ -130,8 +132,23 @@ public class BoardServiceImpl extends BaseServiceImpl {
 	}
 	
 	//일반 게시판 글 쓰기
-	public boolean insertBoard(BoardVO board) {
-		return 0 != getDAO().insert("board.insertBoard", board);
+	public Map<String, Object> insertBoard(BoardVO board) {
+		Map<String, Object> map = new HashMap<>();
+		getDAO().insert("board.insertBoard", board);
+		//인설트 하고 파일업로드
+		BoardVO boardNew = (BoardVO) getDAO().selectOne("board.selectNewOneRow", board);
+		
+		map.put("boardRow", boardNew);
+		
+		board.setBoardNum(boardNew.getBoardNum());
+		if (board.getAttacheFileList() != null) {
+			for (AttacheFileVO attacheFile : board.getAttacheFileList()) {
+				attacheFile.setBoardid(board.getBoardNum());
+				getDAO().insert("attacheFile.insert", attacheFile);
+			}
+		}
+		
+		return map;
 	}
 	
 	//일반 게시판 답글 쓰기
@@ -151,6 +168,15 @@ public class BoardServiceImpl extends BaseServiceImpl {
 	
 	//일반 게시판 글 삭제
 	public boolean deleteBoard(BoardSearchVO search) {
+		List<AttacheFileVO> attacheList = (List<AttacheFileVO>) getDAO().selectList("attacheFile.getList", search.getScBoardNum());
+		
+		for (AttacheFileVO attache : attacheList) {
+			String filePathToDelete = getConfig().getUploadPathPhysical() + getConfig().getUploadPathImage() + attache.getFileNameReal();
+			File fileToDelete = new File(filePathToDelete);
+			if (fileToDelete.exists()) { // 파일이 존재하는지 확인
+				fileToDelete.delete();
+			} 
+		}
 		return 0 != getDAO().delete("board.deleteBoard", search);
 	}
 	
@@ -188,181 +214,23 @@ public class BoardServiceImpl extends BaseServiceImpl {
 		return 0 != getDAO().insert("comment.insertComment", comment);
 	}
 	
-	//댓글 작성 하기
+	//댓글 삭제 하기
 	public boolean deleteComment(int comment_num) {
 		return 0 != getDAO().delete("comment.deleteComment", comment_num);
 	}
 	
-	/*
-
 	
-	
-	
-	//댓글 카운트
-	public int selectCommentCount(int board_num) {
-		return _boardDao.selectByCommentCount(QueryProperty.getQuery("board.selectCommentCount"), board_num);
+	//첨부 파일 목록 가져오기
+	public List<AttacheFileVO> attacheFileList(int boardid) {
+		return (List<AttacheFileVO>) getDAO().selectList("attacheFile.getList", boardid);
 	}
 	
-	//게시판 글 작성
-	public void insert(BoardVO board) {
-		if (StringUtil.isEmpty(board.getFixed_yn())) board.setFixed_yn("N");
-		
-		int row = _boardDao.insert(QueryProperty.getQuery("board.insert"), board);
-		if (row > 0) {
-			System.out.println("반영된 글 갯수 : " + row);
-		} else {
-			System.out.println("반영 X");
-		}
-	}
-	
-	//게시판 댓글 작성
-//	public JSONObject insert(Board_comment comment) {
-//		JSONObject jsonResult = new JSONObject();
-//		int row = _boardDao.insertComment(QueryProperty.getQuery("board.insertComment"), comment);
-//		if (row > 0) {
-//			jsonResult.put("status", true);
-//			System.out.println("반영된 글 갯수 : " + row);
-//			System.out.println("작성한 댓글 = " + comment);
-//			jsonResult.put("board_comment", _boardDao.selectByComment(QueryProperty.getQuery("board.selectCommentRecent"), comment));
-//		} else {
-//			jsonResult.put("status", false);
-//			System.out.println("반영 X");
-//		}
-//		return jsonResult;
-//	}
-	public void insert(CommentVO comment) {
-		int row = _boardDao.insertComment(QueryProperty.getQuery("board.insertComment"), comment);
-		if (row > 0) {
-			System.out.println("반영된 글 갯수 : " + row);
-		} else {
-			System.out.println("반영 X");
-		}
-	}
-	*/
-	
-/*	
-	//게시판 댓글 수정
-	public JSONObject update(CommentVO comment) {
-		JSONObject jsonResult = new JSONObject();
-		String nowtime = StringUtil.getDateToString(new Date(), "yyyy-MM-dd HH:mm:ss");
-		
-		comment.setReg_date(nowtime);
-		int row = _boardDao.updateComment(QueryProperty.getQuery("board.updateComment"), comment);
-		if (row > 0) {
-			
-			jsonResult.put("status", true);
-			jsonResult.put("comment_num", comment.getComment_num());
-			jsonResult.put("detail", comment.getDetail());
-			jsonResult.put("reg_date", nowtime);
-			System.out.println("반영된 댓글 갯수 : " + row);
-		} else {
-			jsonResult.put("status", false);
-			System.out.println("반영 X");
-		}
-		return jsonResult;
-	}
-	
-	//게시판 글 삭제
-	public JSONObject delete(BoardVO board) {
-		JSONObject jsonResult = new JSONObject();
-		int row = _boardDao.delete(QueryProperty.getQuery("board.delete"), board.getBoard_num());
-		if (row > 0) {
-			jsonResult.put("status", true);
-			jsonResult.put("message", CommonProperty.getMessageBoardDelete());
-		} else {
-			jsonResult.put("status", false);
-			jsonResult.put("message", CommonProperty.getMessageBoardFail());
-		}
-		return jsonResult;
-	}
-	
-	public JSONObject deleteAjax(BoardVO board) throws Exception {
-		JSONObject jsonResult = new JSONObject();
-		int row = _boardDao.delete(QueryProperty.getQuery("board.delete"), board.getBoard_num());
-		if (row > 0) {
-			jsonResult.put("status", true);
-			jsonResult.put("message", CommonProperty.getMessageBoardDelete());
-			jsonResult.put("bod", _boardDao.selectByPageRow(board));
-		} else {
-			jsonResult.put("status", false);
-			jsonResult.put("message", CommonProperty.getMessageBoardFail());
-		}
-		
-		
-		return jsonResult;
-	}
-	
-	public JSONObject deleteAjax2(BoardVO board) throws Exception {
-		JSONObject jsonResult = new JSONObject();
-		int row = _boardDao.delete(QueryProperty.getQuery("board.delete"), board.getBoard_num());
-		if (row > 0) {
-			
-			board.setBoard_num(board.getLastBnum());
-			board.setNrow(1);
-			jsonResult.put("status", true);
-			jsonResult.put("message", CommonProperty.getMessageBoardDelete());
-			jsonResult.put("bod", _boardDao.selectByAddList(board));
-		} else {
-			jsonResult.put("status", false);
-			jsonResult.put("message", CommonProperty.getMessageBoardFail());
-		}
-		
-		
-		return jsonResult;
-	}
-	
-	
-	public JSONObject deleteCheckBox(BoardVO board) throws JSONException, Exception {
-		JSONObject jsonResult = new JSONObject();
-		_boardDao.delete(QueryProperty.getQuery("board.deleteChk"), board.getDeleteStr());
-		board.setBoard_num(board.getLastBnum());
-		board.setNrow(board.getCount());
-		jsonResult.put("bodChk", _boardDao.selectByAddList(board));
-	
-		return jsonResult;
-	}
-	
-	public JSONObject deleteCheckBox2(BoardVO board) throws JSONException, Exception {
-		JSONObject jsonResult = new JSONObject();
-		_boardDao.delete(QueryProperty.getQuery("board.deleteChk"), board.getDeleteStr());
-		
-		jsonResult.put("bodChk", _boardDao.selectByPageRow2(board));
-	
-		return jsonResult;
-	}
-	
-	
-	
-	//게시판 댓글 삭제
-	public void deleteComment(int comment_num) {
-		int row = _boardDao.delete(QueryProperty.getQuery("board.deleteComment"), comment_num);
-		if (row > 0) {
-			System.out.println("삭제된 갯수 : " + row);
-		} else {
-			System.out.println("반영 X");
-		}
-		
-	}
-	
-	//게시판 board_list2.jsp용
-	public List<BoardVO> selectByAddList(BoardVO board) throws Exception {
-		board.setNrow(10);
-		return _boardDao.selectByAddList(board);
-	}
-	
-	public JSONObject selectByAjaxList(BoardVO board) throws JSONException, Exception {
-		JSONObject jsonResult = new JSONObject();
-		board.setNrow(10);
-		jsonResult.put("boardAjaxList", _boardDao.selectByAddList(board));
-		
-		return jsonResult;
+	//첨부 파일 한건 가져오기
+	public AttacheFileVO getAttacheFile(AttacheFileVO attach) {
+		return (AttacheFileVO) getDAO().selectOne("attacheFile.getAttacheFile", attach);
 	}
 	
 	
 	
 	
-	
-
-	
-	*/
 }

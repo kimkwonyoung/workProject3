@@ -3,10 +3,13 @@ package com.kosa.work.service.model;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.json.JSONObject;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.kosa.work.service.model.common.AttacheFileVO;
 import com.kosa.work.service.model.general.GeneralModel;
 
 import lombok.AllArgsConstructor;
@@ -31,6 +34,8 @@ public class BoardVO implements GeneralModel {
 	private int level;
 	
 	private int commentNum; // 임시
+	private List<AttacheFileVO> attacheFileList;
+	private MultipartFile[] file;
 	
 //	private int nrow;
 //	private int count;

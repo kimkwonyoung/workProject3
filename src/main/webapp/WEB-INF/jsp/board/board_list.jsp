@@ -97,16 +97,19 @@
 </form>
 <!-- 게시판 글 작성하기  -->
 <div id="dialogWrite" title="글 쓰기">
+<form id="fileForm">
 <label for="title">제목:</label><br>
+	  <input type="hidden" name="memId" value="${loginMember.memberid }" >
       <input type="text" id="writeTitle" name="title" class="form-input"><br>
 
       <label for="content">내용:</label><br>
       <textarea id="writeContent" name="content" rows="10" class="form-input"></textarea><br>
+
     <input type="button"  value="파일추가" onClick="fn_addFile()"/><br>
 	<div id="d_file">
 		<input  type='file' name='file' />
 	</div>
-	<input type="button" id="uploadButton" value="업로드"/>
+</form>
 </div>
 
 <!-- 게시판 글 수정하기  -->
@@ -125,6 +128,8 @@
 	<div>
       <p class="post-meta" id="post-meta">작성자: <span id="author"></span> | 작성일: <span id="date"></span> | 조회수: <span id="views"></span></p>
       <div class="post-content" id="post-content">
+      </div>
+      <div id="fileList" style="margin-top: 20px; padding: 5px;">
       </div>
     </div>
 
@@ -153,6 +158,14 @@
 
 <c:set var="loginmem" value="${loginMember }" />
 <c:set var="loginmemid" value="${loginMember.memberid }" />
+
+<script id="fileTemplate" type="text/x-jsrender">
+{{if ~containsImage(contentType, "image")}}
+    <img src="<c:url value='/board/download.do?fileNo={{:file.fileNo}}'/>">
+{{else}}
+<span style="display: block;"><a style="color:blue" href="<c:url value='/board/download.do?fileNo={{:file.fileNo}}'/>">{{:file.fileNameOrg}}</a></span><br/> 
+{{/if}}
+</script>
 
 <script id="commentTemplate" type="text/x-jsrender">
 <div class="comment-list">
@@ -188,6 +201,7 @@
 </script>
 	
 <script>
+
 function showLink() {
 	const loginmemid = "${loginmemid}";
 	$(".edit-comment-link").each((index, link) => {
@@ -200,6 +214,14 @@ function showLink() {
 }
 
 $(document).ready(function() {
+	$.views.helpers({
+		containsImage: function(text, searchString) {
+			console.log(text.indexOf(searchString));
+			return text.indexOf(searchString) !== -1;
+			
+		}
+	});
+	
 	const loginmem = "${loginmem}";
 	const loginmemid = "${loginmemid}";
 	//수정 하기 버튼 클릭 저장,취소 버튼 활성화
@@ -382,11 +404,44 @@ $(document).ready(function() {
     		
         }
     });
+//    dialog.on("dialogopen", function () {
+// 	    var loginId = $("#writerId").val();
+// 	    var selectedId = $("#seletedid").val();
+// 	    if (loginId === selectedId) {
+// 	        // uid와 id가 일치하는 경우
+// 	        dialog.dialog("option", "buttons", {
+// 	            "수정하기": function () {
+// 	                $("#seletedtitle, #seletedcontent, #fixed_y, #fixed_n").prop("disabled", false);
+
+// 	                $(this).dialog("option", "buttons", {
+// 	                    "수정 완료": function () {
+// 	                        update();
+// 	                    },
+// 	                    "목록보기": function () {
+// 	                        $(this).dialog("close");
+// 	                    }
+// 	                });
+// 	            },
+// 	            "목록보기": function () {
+// 	                $(this).dialog("close");
+// 	            },
+// 	            "삭제하기": deleteBoard
+// 	        });
+// 	    } else {
+// 	        // uid와 id가 일치하지 않는 경우
+// 	        dialog.dialog("option", "buttons", {
+// 	            "목록보기": function () {
+// 	                $(this).dialog("close");
+// 	            }
+// 	        });
+// 	    }
+// 	});   
+   
     $("#dialogWrite").dialog({
         autoOpen: false,
         modal: true,
         width: 800,
-        height: 500,
+        height: 700,
         buttons: {
         	"글 작성": function() {
         		const reply = $("#dialogWrite").data("reply");
@@ -510,32 +565,42 @@ function openUpdate(boardnum) {
 }
 
 function addWrite() {
-	const loginmemid = "${loginmemid}";
-	const param = {
-			title: $("#writeTitle").val(),
-			content: $("#writeContent").val(),
-			memId: loginmemid,
-			
-	      };
-    
-	$.ajax({
-		url: "<c:url value='/board/boardWrite.do'/>",
-		type: "POST",
-		contentType: "application/json; charset=UTF-8",
-		data: JSON.stringify(param),
-		dataType: "json",
-		success: (json) => {
-		  const board = json.boardRow;
-		  const boardTemplate = $("#boardTemplate").html();
-		  const tmpl = $.templates(boardTemplate);
-		  const renderedboard = tmpl.render(board);
+	const fileForm = document.querySelector("#fileForm");
+	const formData = new FormData(fileForm);
+ 	console.log(formData);
+ 	
+	fetch("<c:url value='/board/boardWrite.do'/>", {
+		  method: "POST",
+		  body: formData,
+		})
+		  .then((response) => response.json())
+		  .then((json) => {
+			  const board = json.boardRow;
+			  const boardTemplate = $("#boardTemplate").html();
+			  const tmpl = $.templates(boardTemplate);
+			  const renderedboard = tmpl.render(board);
+			  
+			  const boardListHTML = $("#boardbottom");
+			  $(boardListHTML).prepend(renderedboard);
+		  })
+	
+// 	$.ajax({
+// 		url: "<c:url value='/board/boardWrite.do'/>",
+// 		type: "POST",
+// 		contentType: "application/json; charset=UTF-8",
+// 		data: JSON.stringify(param),
+// 		dataType: "json",
+// 		success: (json) => {
+// 		  const board = json.boardRow;
+// 		  const boardTemplate = $("#boardTemplate").html();
+// 		  const tmpl = $.templates(boardTemplate);
+// 		  const renderedboard = tmpl.render(board);
 		  
-		  const boardListHTML = $("#boardbottom");
-		  $(boardListHTML).prepend(renderedboard);
-		  
+// 		  const boardListHTML = $("#boardbottom");
+// 		  $(boardListHTML).prepend(renderedboard);
 
-		}
-	});
+// 		}
+// 	});
 	
 }
 
@@ -585,8 +650,8 @@ function info(boardnum, type) {
 			    boardNum: boardnum,
 			};
 	}
-    //console.log(link)
-    //console.log(param)
+    console.log(link)
+    console.log(param)
 	
 	$.ajax({
 		url: link,
@@ -605,28 +670,46 @@ function info(boardnum, type) {
 				$("#infoboardnum").val(info.noticeNum);
 			} else if (type === "board") {
 				$("#infoboardnum").val(info.boardNum);
+				const filelist = json.filelist;
+				const fileTemplate = $("#fileTemplate").html();
+				const fileTmpl = $.templates(fileTemplate);
+				
+				const renderedFiles = filelist.map(fileItem => {
+					  return {
+					    file: fileItem,
+					    contentType: fileItem.contentType
+					  };
+					});
+				
+				const renderedFile = fileTmpl.render(renderedFiles);
+				const filelistHTML = $("#fileList");
+				filelistHTML.empty();
+				$(filelistHTML).append(renderedFile);
+				
+				$("#comment-count").text("댓글(" + json.commentCount + ")");
+				$("#comment-memid").text(loginmemid);
+				
+		     	const commentData = json.comment;
+		     	const commentTemplate = $("#commentTemplate").html();
+				const tmpl = $.templates(commentTemplate);
+				//const renderedcomment = tmpl.render({comments: commentData});
+				const renderedcomment = tmpl.render(commentData);
+				  
+				const commentListHTML = $("#comment-tmpl");
+				commentListHTML.empty();
+				$(commentListHTML).append(renderedcomment);
+				
+				showLink();
+				
 			}
-			$("#comment-count").text("댓글(" + json.commentCount + ")");
-			$("#comment-memid").text(loginmemid);
 			
-	    	$("#infoboardmemid").val(info.memId);
+			$("#infoboardmemid").val(info.memId);
 	     	$("#author").text(info.memId);
 	     	$("#date").text(info.modDate);
 	     	$("#views").text(info.viewCount);
 	     	$("#post-content").html(info.content);
 	     	$("#dialogInfo").dialog("option", "title", info.title);
-	     	
-	     	const commentData = json.comment;
-	     	const commentTemplate = $("#commentTemplate").html();
-			const tmpl = $.templates(commentTemplate);
-			//const renderedcomment = tmpl.render({comments: commentData});
-			const renderedcomment = tmpl.render(commentData);
-			  
-			const commentListHTML = $("#comment-tmpl");
-			commentListHTML.empty();
-			$(commentListHTML).append(renderedcomment);
 			
-			showLink();
 			
 		}
 	});
@@ -640,6 +723,7 @@ function info(boardnum, type) {
 $("#wr").on("click", () => {
 	$("#writeTitle").text("");
 	$("#writeContent").text("");
+	$("#d_file").empty();
 	$("#dialogWrite").dialog("open");
 })
 
@@ -746,26 +830,28 @@ function fn_addFile(){
 }
 
 //파일 업로드
-document.querySelector("#uploadButton").addEventListener("click", e => {
-	const mForm = document.querySelector("#mForm");
-	const formData = new FormData(mForm);
+// document.querySelector("#uploadButton").addEventListener("click", e => {
+// 	const fileForm = document.querySelector("#fileForm");
+// 	const formData = new FormData(fileForm);
 
- 	console.log(formData);
-    const option = {
-        method : 'POST',
-        body: formData
-    };
+//  	console.log(formData);
+//     const option = {
+//         method : 'POST',
+//         body: formData
+//     };
 
-    fetch("<c:url value='/board/uploadFile.do'/>", option)
-    .then(response => response.json())
-    .then(json => {
-    	if (json.status) {
-    		alert("성공");
-    	} else {
-    		alert("실패");
-    	}
-    });
-});
+//     fetch("<c:url value='/board/uploadFile.do'/>", option)
+//     .then(response => response.json())
+//     .then(json => {
+//     	if (json.status) {
+//     		alert("성공");
+//     		console.log(json.filelist);
+//     	} else {
+//     		alert("실패");
+//     	}
+//     });
+// });
+
 
    
    

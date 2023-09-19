@@ -1,6 +1,8 @@
 package com.kosa.work.service.model.common;
 
 
+import java.util.List;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kosa.work.service.model.general.GeneralModel;
@@ -23,8 +25,10 @@ public class AttacheFileVO implements GeneralModel {
 	private String fileNameReal;	// 서버에 저장된 파일명 
 	private int    length;			// 파일의 길이
 	private String contentType;		// 컨텐츠 타입
-	private String   reg_date;		// 등록일시
+	private String   regDate;		// 등록일시
 	
-	private MultipartFile[] file;
+
+	
+	
 
 }

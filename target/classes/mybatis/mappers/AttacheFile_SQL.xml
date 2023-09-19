@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+      PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="attacheFile">
+
+	<select id="getList" resultType="attacheFileVO">
+		select 
+			 fileNo			
+			, boardid			
+			, fileNameOrg 	
+			, fileNamereal 	
+			, length				
+			, contenttype	
+			, reg_date 
+		from attachefile
+		where boardid = #{boardid} 
+		order by fileNo 
+	</select>
+	
+
+	<select id="getAttacheFile" parameterType="attacheFileVO" resultType="attacheFileVO">
+		select 
+			  fileNo			
+			, boardid			
+			, fileNameOrg 	
+			, fileNamereal 	
+			, length				
+			, contenttype	
+			, reg_date
+		from attachefile
+		where fileNo = #{fileNo} 
+		order by fileNo 
+	</select>
+	
+	<insert id="insert" >
+		insert into attachefile (
+			  fileNo			
+			, boardid			
+			, fileNameOrg 	
+			, fileNamereal 	
+			, length				
+			, contenttype			
+		) values (
+			  FILE_NO_SEQ.nextval
+			, #{boardid     }
+			, #{fileNameOrg }
+			, #{fileNameReal}
+			, #{length	    }
+			, #{contentType }	
+		)
+	</insert>
+</mapper>

@@ -17,6 +17,7 @@
 			<typeAlias type="com.kosa.work.service.model.NoticeVO"  alias="noticeVO" />
 			<typeAlias type="com.kosa.work.service.model.CommentVO"  alias="commentVO" />
 			<typeAlias type="com.kosa.work.service.model.MemberVO"  alias="memberVO" />
+			<typeAlias type="com.kosa.work.service.model.common.AttacheFileVO"  alias="attacheFileVO" />
 			
 			
 			

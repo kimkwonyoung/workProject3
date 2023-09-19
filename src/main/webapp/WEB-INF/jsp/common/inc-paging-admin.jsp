@@ -1,6 +1,36 @@
 <%-- <%@ page language="java" contentType="text/html;charset=UTF-8" pageEncoding="UTF-8"%> --%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<style>
+.btn_prev1 {
+	padding:15px;
+	margin-left: 3px;
+	background: #fff url(../images/ic_prev1.png) no-repeat 50% 50%;
+}
 
+.btn_prev2 {
+	padding:15px;
+	background: #fff url(../images/ic_prev2.png) no-repeat 50% 50%;
+}
+
+.btn_next1 {
+	padding:15px;
+	background: #fff url(../images/ic_next1.png) no-repeat 50% 50%;
+}
+
+.btn_next2 {
+	padding:15px;
+	background: #fff url(../images/ic_next2.png) no-repeat 50% 50%;
+}
+.page_navi_set {
+	text-align:center;
+}
+.mL3 {
+	padding:10px;
+}
+.on {
+	color:#fff; font-weight:bold; background:#ADADAD;
+}
+</style>
 
 <!-- 	server attribute에 search 객체를 추가해야 함. -->
 <!-- 	하단 goPage() 메서드 있음 : jquery.locator.js 필요 -->
