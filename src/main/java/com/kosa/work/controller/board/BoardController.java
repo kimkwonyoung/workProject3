@@ -130,7 +130,7 @@ public class BoardController extends PrtController {
 			}
 			board.setAttacheFileList(list);
 		}
-		log.info(">>>>>>>>>파일 데이터 = " + board.getAttacheFileList().toString());
+		//log.info(">>>>>>>>>파일 데이터 = " + board.getAttacheFileList().toString());
 		
 		map = _boardService.insertBoard(board);
 //		map.put("boardRow", _boardService.boardNewOne(board));

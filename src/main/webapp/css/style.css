@@ -547,29 +547,6 @@ p {
 	box-sizing: border-box;
 }
 
-#userForm {
-	position: fixed;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	width: 355px;
-	height: 530px;
-	border: 1px solid #ccc;
-	border-radius: 5px;
-	padding: 20px;
-	background-color: #fff;
-}
-#userForm2 {
-	position: fixed;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	width: 355px;
-	border: 1px solid #ccc;
-	border-radius: 5px;
-	padding: 20px;
-	background-color: #fff;
-}
 #userForm2 h2 {
 	margin-bottom: 10px;
 	text-align: center;

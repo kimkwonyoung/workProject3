@@ -85,19 +85,6 @@ public class MemberController extends PrtController {
 		return "member/member_info";
 	}
 	
-	//정보 수정 폼 이동
-	@RequestMapping(value = "/memberUpdateMove.do")
-	public String memberUpdateMove(MemberSearchVO search, Model model) throws Exception {
-		model.addAttribute("search", search);
-		return "noLayout/member/member_update";
-	}
-	
-	//회원 탈퇴 폼 이동
-	@RequestMapping(value = "/memberWithdrawMove.do")
-	public String memberWithdrawMove(Model model) throws Exception {
-		return "noLayout/member/member_withdraw";
-	}
-	
 	//회원 정보 수정 수행
 	@ResponseBody
 	@RequestMapping(value = "/memberUpdate.do", method = RequestMethod.POST)
@@ -105,7 +92,6 @@ public class MemberController extends PrtController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		
 		map.put("status", _memberService.update(member));
-		
 		
 		HttpSession session = request.getSession();
 		request.getSession().removeAttribute("loginMember");
@@ -120,22 +106,30 @@ public class MemberController extends PrtController {
 	//회원 탈퇴 수행
 	@ResponseBody
 	@RequestMapping(value = "/memberWithdraw.do", method = RequestMethod.POST)
-	public Map<String, Object> memberWithdraw(MemberVO member, HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public Map<String, Object> memberWithdraw(@RequestBody MemberVO member, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("status", _memberService.delete(member));
-		
+		getSession().invalidate();
 		return map;
 	}
 	
-	//회원 아이디 찾기, 비밀번호 찾기
-	@RequestMapping(value = "/memberSearch.do")
-	public String memberSearch(MemberVO member, MemberSearchVO search, Model model) throws Exception {
-		String message = _memberService.selectBySearch(member, search);
+	//아이디 찾기
+	@ResponseBody
+	@RequestMapping(value = "/memberSearchid.do" , method = RequestMethod.POST)
+	public Map<String, Object> memberSearchid(@RequestBody MemberVO member) throws Exception {
+		//logger.info(">>>>>>>>>>>>>>>>member=" + member);
 		
-		model.addAttribute("search", search);
-		model.addAttribute("message", message);
-		return "noLayout/member/complete";
+		return _memberService.searchId(member);
 	}
+	
+	//비밀번호 찾기
+	@ResponseBody
+	@RequestMapping(value = "/memberSearchpwd.do" , method = RequestMethod.POST)
+	public Map<String, Object> memberSearchpwd(@RequestBody MemberVO member) throws Exception {
+		
+		return _memberService.searchPwd(member);
+	}
+	
 	
 	//아이디 중복 체크
 	@ResponseBody

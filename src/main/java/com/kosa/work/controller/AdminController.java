@@ -77,6 +77,18 @@ public class AdminController extends PrtController {
 		return "admin/notice_list";
 	}
 	
+	//일반 게시판 목록
+	@RequestMapping(value = "/boardList.do")
+	public String boardList(BoardSearchVO search, Model model) throws Exception {
+		if (search.getScRecodeCount() > 0)
+			search.setRecordCount(search.getScRecodeCount());
+		
+		model.addAttribute("result", _boardService.boardList(search));
+		model.addAttribute("search", search);
+		
+		return "board/board_list";
+	}
+	
 	//공지사항 수정
 	@ResponseBody
 	@RequestMapping(value = "/noticeUpdate.do", method = RequestMethod.POST)

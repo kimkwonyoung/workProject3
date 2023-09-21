@@ -100,9 +100,9 @@
 	                <input type="submit" id="memlogin" onclick="login()" value="로그인">              
 	            </div>
 	            <div id="userInsert">
-	            	<a href="#">아이디 찾기</a>｜
-	            	<a href="#">비밀번호 찾기</a>｜
-	            	<a href="#">회원 가입</a>
+	            	<a href="#" id="searchId">아이디 찾기</a>｜
+	            	<a href="#" id="searchPwd">비밀번호 찾기</a>｜
+	            	<a href="#" id="writeMem">회원 가입</a>
 	            </div>
 	        </form>
 	    	</div>
@@ -162,8 +162,211 @@
       </div>     
     </footer>  
   </div>
-	<script type="text/javascript">
+
+<div id="dialogSearchid" title="회원 아이디 찾기">
+ <div class="form-group-insert">
+	 <label for="username">이름:</label>
+	 <input type="text" id="searchName" name="name" placeholder="이름을 입력하세요" required>
+	 </div>
+	 <div class="form-group-insert">
+	     <label for="userid">휴대폰번호:</label>
+	     <input type="text" id="searchTel" name="phone" placeholder="휴대폰번호를 입력하세요" required>
+	 </div>
+</div>
+
+<div id="dialogSearchpwd" title="회원 비밀번호 찾기">
+<div class="form-group-insert">
+    <label for="userid">아이디:</label>
+    <input type="text" id="pwdSearchId" name="memberid" placeholder="아이디를 입력하세요" required>
+</div>
+<div class="form-group-insert">
+    <label for="username">이름:</label>
+    <input type="text" id="pwdSearchName" name="name" placeholder="이름을 입력하세요" required>
+</div>
+</div> 
+
+<div id="dialogWritemem" title="회원 가입">
+	<div id="userForm">
+	    <h2>회원 가입</h2>
+	        <div class="form-group-insert">
+	            <label for="userid">아이디:</label>
+	            <input type="text" id="userid" name="memberid" placeholder="아이디를 입력하세요" required>
+	        	<input type="button" id="existUid" value="중복확인"/>
+	        </div>
+	        <div class="form-group-insert">
+	            <label for="password">비밀번호:</label>
+	            <input type="password" id="password" name="pwd" placeholder="비밀번호를 입력하세요" required>
+	        	<label for="password">비밀번호 확인:</label>
+	        	<input type="password" id="password2" name="pwd2" placeholder="비밀번호를 입력하세요" required>
+	        </div>
+	        <div class="form-group-insert">
+	            <label for="username">이름:</label>
+	            <input type="text" id="username" name="name" placeholder="이름을 입력하세요" required>
+	        </div>
+	        <div class="form-group-insert">
+	            <label for="tel">휴대폰 번호:</label>
+	            <input type="tel" id="tel" name="phone" placeholder="휴대폰 번호를 입력하세요" required>
+	        </div>
+	</div>
+</div>   
+  
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#dialogSearchid").dialog({
+	    autoOpen: false,
+	    modal: true,
+	    width: 500,
+	    height: 500,
+	    buttons: {
+	        "아이디 찾기": function() {
+	        	const param = {
+        		        name: searchName.value,
+        		        phone: searchTel.value,
+        		      };
+        		$.ajax({
+        			url: "<c:url value='/member/memberSearchid.do'/>",
+        			type: "POST",
+        			contentType: "application/json; charset=UTF-8",
+        			data: JSON.stringify(param),
+        			dataType: "json",
+        			success: (json) => {
+        				alert(json.message);
+        				if (status) {
+        					$("#dialogSearchid").dialog("close");
+        				}
+        			}
+        		});
+	        },
+	        "Close": function() {
+	            $(this).dialog("close");
+	        }
+	    }
+	});
 	
+	$("#searchId").on("click", function(e) {
+		$("#searchName").val("");
+		$("#searchTel").val("");
+		$("#dialogSearchid").dialog("open");
+	});
+	
+	$("#dialogSearchpwd").dialog({
+	    autoOpen: false,
+	    modal: true,
+	    width: 500,
+	    height: 500,
+	    buttons: {
+	        "비밀번호 찾기": function() {
+	        	const param = {
+        		        memberid: pwdSearchId.value,
+        		        name: pwdSearchName.value,
+        		      };
+        		$.ajax({
+        			url: "<c:url value='/member/memberSearchpwd.do'/>",
+        			type: "POST",
+        			contentType: "application/json; charset=UTF-8",
+        			data: JSON.stringify(param),
+        			dataType: "json",
+        			success: (json) => {
+        	          alert(json.message);
+        	          if (status) {
+        	        	  $("#dialogSearchpwd").dialog("close");
+        	          }
+	        			
+        			}
+        		});
+	        },
+	        "Close": function() {
+	            $(this).dialog("close");
+	        }
+	    }
+	});
+	
+	$("#searchPwd").on("click", function(e) {
+		$("#pwdSearchId").val("");
+		$("#pwdSearchName").val("");
+		$("#dialogSearchpwd").dialog("open");
+	});
+	
+	
+	let existUidChecked = false;
+	$("#existUid").on("click", () => {
+		const param = {memberid: userid.value};
+		
+		$.ajax({
+			url: "<c:url value='/member/memberExist.do'/>",
+			type: "POST",
+			contentType: "application/json; charset=UTF-8",
+			data: JSON.stringify(param),
+			dataType: "json",
+			success: (json) => {
+		       if (json.status) {
+		    	   alert("아이디가 존재 합니다");
+		    	   userid.value = "";
+		    	   userid.focus();
+		  	       existUidChecked = false;
+		       } else {
+		    	   alert("사용 가능한 아이디 입니다");
+		    	   existUidChecked = true;
+		       }
+			}
+			
+		});
+	});
+	
+	$("#dialogWritemem").dialog({
+	    autoOpen: false,
+	    modal: true,
+	    width: 500,
+	    height: 600,
+	    buttons:  [
+	        {
+	            text: "회원 가입",
+	            id: "register", 
+	            click: function() {
+	            	if (!existUidChecked) {
+	        			alert("아이디 중복을 확인 해주세요");
+	        			existUid.focus();
+	        			return;
+	        		}
+	        		const param = {
+	        	    		memberid: userid.value,
+	        		        pwd: password.value,
+	        		        name: username.value,
+	        		        phone: tel.value,
+	        		      };
+	        		
+	        		$.ajax({
+	        			url: "<c:url value='/member/memberInsert.do'/>",
+	        			type: "POST",
+	        			contentType: "application/json; charset=UTF-8",
+	        			data: JSON.stringify(param),
+	        			dataType: "json",
+	        			success: (json) => {
+	        	          if (json.status) {
+	        	        	  alert("회원가입 성공");
+	        	          	}
+	        			}
+	        		});
+	        		$("#dialogWritemem").dialog("close");
+	            },
+	        },
+	        {
+	            text: "Close",
+	            click: function() {
+	                $(this).dialog("close");
+	            }
+	        }
+	    ]
+	});
+	
+	$("#writeMem").on("click", function(e) {
+		$("#dialogWritemem").dialog("open");
+	});
+});
+
+
+
+
 	
 /* 	function login() {
 		const param = {
@@ -254,54 +457,54 @@
 	    }
 	}); */
 	
-	//iframe 닫기 메시지 받는곳
-	$(window).on("message", (event) => {
-		if (event.data === "closeIframe") {
-			 var registrationIframe = $("#iframeForm");
-			 if (registrationIframe.length > 0) {
-				 registrationIframe.remove();
-			 }
-		}
+// 	//iframe 닫기 메시지 받는곳
+// 	$(window).on("message", (event) => {
+// 		if (event.data === "closeIframe") {
+// 			 var registrationIframe = $("#iframeForm");
+// 			 if (registrationIframe.length > 0) {
+// 				 registrationIframe.remove();
+// 			 }
+// 		}
 		
-	});
+// 	});
 	
-	var showIframe = (href) => {
-	    var iframe = $("<iframe>", {
-	        src: href,
-	        css: {
-	            border: "1px solid gray",
-	            width: "355px",
-	            height: "510px"
-	        }
-	    });
+// 	var showIframe = (href) => {
+// 	    var iframe = $("<iframe>", {
+// 	        src: href,
+// 	        css: {
+// 	            border: "1px solid gray",
+// 	            width: "355px",
+// 	            height: "510px"
+// 	        }
+// 	    });
 
-	    var closeButton = $("<button>", {
-	        class: "close-button",
-	        text: "X",
-	        css: {
-	            position: "absolute",
-	            top: "10px",
-	            right: "10px"
-	        },
-	        click: () => {
-	            iframeContainer.remove();
-	        }
-	    });
+// 	    var closeButton = $("<button>", {
+// 	        class: "close-button",
+// 	        text: "X",
+// 	        css: {
+// 	            position: "absolute",
+// 	            top: "10px",
+// 	            right: "10px"
+// 	        },
+// 	        click: () => {
+// 	            iframeContainer.remove();
+// 	        }
+// 	    });
 
-	    var iframeContainer = $("<div>", {
-	        id: "iframeForm",
-	        css: {
-	            position: "fixed",
-	            top: "50%",
-	            left: "50%",
-	            transform: "translate(-50%, -50%)",
-	            backgroundColor: "#fff"
-	        }
-	    });
+// 	    var iframeContainer = $("<div>", {
+// 	        id: "iframeForm",
+// 	        css: {
+// 	            position: "fixed",
+// 	            top: "50%",
+// 	            left: "50%",
+// 	            transform: "translate(-50%, -50%)",
+// 	            backgroundColor: "#fff"
+// 	        }
+// 	    });
 
-	    iframeContainer.append(iframe, closeButton);
-	    $("body").append(iframeContainer);
-	}
+// 	    iframeContainer.append(iframe, closeButton);
+// 	    $("body").append(iframeContainer);
+// 	}
 	
 /* 	var showIframe = (href) => {
 		var iframe = document.createElement("iframe");
@@ -337,15 +540,15 @@
 	} */
 	
 	
-	var hrefArr = [
-		"<c:url value='/member/memberSearchMove.do?type1=findid'/>", 
-		"<c:url value='/member/memberSearchMove.do?type1=findpwd'/>",
-		"<c:url value='/member/memberWrite.do'/>"
-		];
+// 	var hrefArr = [
+// 		"<c:url value='/member/memberSearchMove.do?type1=findid'/>", 
+// 		"<c:url value='/member/memberSearchMove.do?type1=findpwd'/>",
+// 		"<c:url value='/member/memberWrite.do'/>"
+// 		];
 
-	$("#userInsert a").each((i, link) => {
-	    $(link).on("click", createClickHandler(hrefArr[i]));
-	});
+// 	$("#userInsert a").each((i, link) => {
+// 	    $(link).on("click", createClickHandler(hrefArr[i]));
+// 	});
 	
 /* 	var links = document.querySelectorAll("#userInsert a");
 	
@@ -354,11 +557,11 @@
 		link.addEventListener("click", createClickHandler(hrefArr[i]));
 	} */
 	
-	function createClickHandler(href) {
-		return () => {
-			showIframe(href);
-		}
-	}
+// 	function createClickHandler(href) {
+// 		return () => {
+// 			showIframe(href);
+// 		}
+// 	}
 	
 	
 	

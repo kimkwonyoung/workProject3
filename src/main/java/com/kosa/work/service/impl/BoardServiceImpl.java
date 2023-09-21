@@ -34,8 +34,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class BoardServiceImpl extends BaseServiceImpl {
 	private static final Logger logger = LoggerFactory.getLogger(BoardServiceImpl.class);
-	@Resource
-	private GeneralDAOImpl _gDao;
 	
 	//메인페이지 공지사항, 일반 글 4개
 	public Map<String, Object> mainList(SearchVO search) {

@@ -10,7 +10,6 @@
 <script src="<c:url value='/js/jsviews.js'/>"></script>
 <script src="<c:url value='/js/jquery.locator.js'/>"></script>
 <script src="<c:url value='/js/jquery.oLoader.min.js'/>"></script>
-<script src="<c:url value='/js/jsUtil.js'/>"></script>
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <link rel="stylesheet" href="<c:url value='/css/style.css'/>">
 <head>

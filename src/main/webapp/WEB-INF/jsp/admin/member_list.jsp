@@ -132,7 +132,7 @@ $(function() {
 $("#moreBtn").on("click", e => {
 	e.preventDefault();
 	const param = {
-			scMemid: $("#memberList tr:last-child td:first-child").text(),
+			scMemNum: $("#memberList tr:last-child td:first-child").text(),
 	      };
 	
 	$.ajax({

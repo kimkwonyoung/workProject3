@@ -190,6 +190,7 @@
 
 <script id="boardTemplate" type="text/x-jsrender">
 	<tr>
+		<td class="checkbox-cell"><input type="checkbox" name="chkBoardNum" class="chkbox" value="{{:boardNum }}"></td>
     	<td>{{:boardNum}}</td>
 		<td style="text-align: left;">
           <a href="#" onclick="info({{:boardNum}}, 'board')">{{:title}}</a>
@@ -343,6 +344,9 @@ $(document).ready(function() {
 		$(".checkbox-all").css("display", "none");
 		$(".checkbox-cell").css("display", "none");
 	}
+  
+
+    
    $("#dialogInfo").dialog({
         autoOpen: false,
         modal: true,
@@ -404,38 +408,6 @@ $(document).ready(function() {
     		
         }
     });
-//    dialog.on("dialogopen", function () {
-// 	    var loginId = $("#writerId").val();
-// 	    var selectedId = $("#seletedid").val();
-// 	    if (loginId === selectedId) {
-// 	        // uid와 id가 일치하는 경우
-// 	        dialog.dialog("option", "buttons", {
-// 	            "수정하기": function () {
-// 	                $("#seletedtitle, #seletedcontent, #fixed_y, #fixed_n").prop("disabled", false);
-
-// 	                $(this).dialog("option", "buttons", {
-// 	                    "수정 완료": function () {
-// 	                        update();
-// 	                    },
-// 	                    "목록보기": function () {
-// 	                        $(this).dialog("close");
-// 	                    }
-// 	                });
-// 	            },
-// 	            "목록보기": function () {
-// 	                $(this).dialog("close");
-// 	            },
-// 	            "삭제하기": deleteBoard
-// 	        });
-// 	    } else {
-// 	        // uid와 id가 일치하지 않는 경우
-// 	        dialog.dialog("option", "buttons", {
-// 	            "목록보기": function () {
-// 	                $(this).dialog("close");
-// 	            }
-// 	        });
-// 	    }
-// 	});   
    
     $("#dialogWrite").dialog({
         autoOpen: false,
@@ -582,6 +554,8 @@ function addWrite() {
 			  
 			  const boardListHTML = $("#boardbottom");
 			  $(boardListHTML).prepend(renderedboard);
+			  $(".checkbox-all").css("display", "none");
+		      $(".checkbox-cell").css("display", "none");
 		  })
 	
 // 	$.ajax({
@@ -713,16 +687,16 @@ function info(boardnum, type) {
 			
 		}
 	});
-	$("#dialogInfo").data("type", type).dialog("open");
+  
+//  	$("#dialogInfo").dialog("open");
+ 	$("#dialogInfo").data("type", type).dialog("open");
+// 	$("#dialogInfo").data("buttons", buttons).dialog("open");
 }
 
 
-
-
-
 $("#wr").on("click", () => {
-	$("#writeTitle").text("");
-	$("#writeContent").text("");
+	$("#writeTitle").val("");
+	$("#writeContent").val("");
 	$("#d_file").empty();
 	$("#dialogWrite").dialog("open");
 })

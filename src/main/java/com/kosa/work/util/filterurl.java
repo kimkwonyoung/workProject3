@@ -39,25 +39,18 @@ public class filterurl implements Filter {
 //    	System.out.println("action = " + action);
        
         if (session.getAttribute("loginMember") == null) {
-            if (action.equals("/board/boardWrite.do")) {
-                httpResponse.sendRedirect(contextPath + "/board/boardList.do");
-                return;
-            } else if (action.equals("/board/boardUpdateInfo.do")) {
-            	httpResponse.sendRedirect(contextPath + "/board/boardList.do");
-            	return;
-            } else if (action.equals("/board/boardUpdateInfo.do")) {
-           	 	httpResponse.sendRedirect(contextPath + "/board/boardList.do");
-           	 	return;
-            } else if (action.equals("/member/memberList.do")) {
-            	httpResponse.sendRedirect(contextPath + "/main.do");
-            	return;
-            } else if (action.equals("/member/memberUpdateMove.do")) {
-            	httpResponse.sendRedirect(contextPath + "/main.do");
-            	return;
-            } else if (action.equals("/member/memberWithdrawMove.do")) {
-            	httpResponse.sendRedirect(contextPath + "/main.do");
-        	 	return;
-            } 
+//            if (action.equals("/board/boardWrite.do")) {
+//                httpResponse.sendRedirect(contextPath + "/board/boardList.do");
+//                return;
+//            } else if (action.equals("/board/boardUpdateInfo.do")) {
+//            	httpResponse.sendRedirect(contextPath + "/board/boardList.do");
+//            	return;
+//            } else if (action.equals("/board/boardUpdateInfo.do")) {
+//           	 	httpResponse.sendRedirect(contextPath + "/board/boardList.do");
+//           	 	return;
+//            } else if (action.equals("/member/memberList.do")) {
+//            	httpResponse.sendRedirect(contextPath + "/main.do");
+//            	return; 
 //            else if (action.equals("/admin/memberList.do")) {
 //            	httpResponse.sendRedirect(contextPath + "/main.do");
 //        	 	return;
@@ -66,7 +59,6 @@ public class filterurl implements Filter {
 //        	 	return;
 //            }
         } else {
-        	System.out.println("로그인 한 상태 확인");
 //        	MemberVO mem = (MemberVO) session.getAttribute("loginMember");
 //        	if (!mem.getMemberid().equals("admin")) {
 //        		if (action.equals("/admin/*.do")) {

@@ -99,7 +99,7 @@
       <label for="content">내용:</label><br>
       <textarea id="writeContent" name="content" rows="10" class="form-input"></textarea><br>
       
-      <input type="checkbox" id="fixed-yn" name="fixedYn" value="Y">
+      <input type="checkbox" id="fixed-yn-wrtie" name="fixedYn" value="Y">
       <label class="" id="fixed">상단 고정</label>
 </div>
 
@@ -110,7 +110,7 @@
 
       <label for="content">내용:</label><br>
       <textarea id="updateContent" name="content" rows="10" class="form-input"></textarea><br>
-      <input type="checkbox" id="fixed-yn" name="fixedYn" value="Y">
+      <input type="checkbox" id="fixed-yn-update" name="fixedYn" value="Y">
       <label class="" id="fixed">상단 고정</label>
 </div>
 
@@ -141,6 +141,8 @@ $(document).ready(function() {
 	if (currentUrl.includes("admin")) {
 		$("#mForm").attr("action", "<c:url value='/admin/noticeList.do'/>");
 	} else if (currentUrl.includes("board")) {
+		$(".checkbox-all").css("display", "none");
+		$(".checkbox-cell").css("display", "none");
 		$("#mForm").attr("action", "<c:url value='/board/noticeList.do'/>");
 	}
 	
@@ -202,7 +204,7 @@ $(document).ready(function() {
 });
 
 function addUpdate(noticenum) {
-	const fixedYn = $("#fixed-yn").is(":checked") ? "Y" : "N";
+	const fixedYn = $("#fixed-yn-update").is(":checked") ? "Y" : "N";
 	const param = {
 	        noticeNum: noticenum,
 	        title: $("#updateTitle").val(),
@@ -242,7 +244,7 @@ function openUpdate(noticenum) {
 	   		$("#updateTitle").val(notice.title);
 	   		$("#updateContent").html(notice.content);
 	   		if (notice.fixedYn === "Y") {
-	   			$("#fixed-yn").prop("checked", true);
+	   			$("#fixed-yn-update").prop("checked", true);
 	   		}
    		  
 		}
@@ -252,7 +254,7 @@ function openUpdate(noticenum) {
 }
 
 function addWrite() {
-	const fixedYn = $("#fixed-yn").is(":checked") ? "Y" : "N";
+	const fixedYn = $("#fixed-yn-write").is(":checked") ? "Y" : "N";
 	const param = {
 			title: $("#writeTitle").val(),
 			content: $("#writeContent").val(),
