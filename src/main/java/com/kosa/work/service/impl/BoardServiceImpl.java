@@ -34,11 +34,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class BoardServiceImpl extends BaseServiceImpl {
 	private static final Logger logger = LoggerFactory.getLogger(BoardServiceImpl.class);
-	
+
 	//메인페이지 공지사항, 일반 글 4개
 	public Map<String, Object> mainList(SearchVO search) {
 		Map<String, Object> map = new HashMap<String, Object>();
-		
 		map.put("noticeList", (List<NoticeVO>) getDAO().selectList("notice.selectMainNotice", search));
 		map.put("nomalList", (List<BoardVO>) getDAO().selectList("board.selectMainBoard", search));
 		return map;

@@ -38,6 +38,7 @@ import com.kosa.work.service.model.NoticeVO;
 import com.kosa.work.service.model.common.AttacheFileVO;
 import com.kosa.work.service.model.common.SearchVO;
 import com.kosa.work.service.model.search.BoardSearchVO;
+import com.kosa.work.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
